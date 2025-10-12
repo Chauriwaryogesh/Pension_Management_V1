@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Pension Policy - Secure Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body, html {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* Slate 100 for background */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-content {
+            flex-grow: 1;
+        }
+        .header {
+            background-color: #1e40af; /* Blue 800 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            background-color: #374151; /* Gray 700 */
+            color: #d1d5db; /* Gray 300 */
+            padding: 1rem 0;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+        .form-section {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+        .form-section h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #eff6ff; /* Blue 50 */
+            padding-bottom: 0.5rem;
+        }
+        .input-field {
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            transition: all 0.2s;
+            width: 100%;
+            background-color: #ffffff;
+        }
+        .input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+        .input-field:disabled {
+            background-color: #f8fafc;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+        /* Button Styles */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(0);
+        }
+        .action-btn:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        /* Modals and Loading */
+        .notification-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+        }
+        .notification-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .notification-content, .search-modal-content {
+            background-color: #fefefe;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .search-modal-content {
+            max-width: 950px;
+            text-align: left;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="text-2xl font-extrabold text-white flex items-center">
+                <i class="fas fa-money-check-alt mr-3 text-cyan-300"></i>
+                Pension Management System
+            </div>
+            <nav>
+                <a href="#" class="text-white hover:text-cyan-200 transition duration-150 ease-in-out font-medium mr-4">Dashboard</a>
+                <a href="#" class="text-white hover:text-cyan-200 transition duration-150 ease-in-out font-medium">Reports</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-content container mx-auto p-4 md:p-10 max-w-7xl">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-10 text-center tracking-tight">
+            <span class="text-blue-700">New Policy</span> Enrollment Form
+        </h1>
+        
+        <form id="pensionPolicyForm" class="space-y-8">
+
+            <div class="form-section">
+                <h2 class="flex items-center"><i class="fas fa-user-circle mr-3 text-2xl"></i>Customer Profile & Lookup</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end">
+                    
+                    <div class="col-span-2 md:col-span-1">
+                        <label for="customerNumberInputForSearch" class="block text-sm font-medium text-gray-700 mb-1">Customer No. (Search)</label>
+                        <input type="text" id="customerNumberInputForSearch" class="input-field" placeholder="Enter Customer ID" onkeyup="checkCustomerNumber(this.value)">
+                    </div>
+
+                    <div class="col-span-2 md:col-span-1">
+                        <label for="customerNumberForApi" class="block text-sm font-medium text-gray-700 mb-1">Customer No. (Policy) <span class="text-red-500">*</span></label>
+                        <input type="text" id="customerNumberForApi" required class="input-field bg-gray-100" placeholder="Populates after search" disabled>
+                        <p id="customerStatus" class="text-xs mt-1 h-4"></p>
+                    </div>
+
+                    <div>
+                        <button type="button" id="fetchCustomerBtn" onclick="fetchCustomerDetails()" class="action-btn w-full bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/50" disabled>
+                            <i class="fas fa-database mr-2"></i>Fetch Details
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <button type="button" id="searchCustomerBtn" onclick="showSearchCustomerModal()" class="action-btn w-full bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-500/50">
+                            <i class="fas fa-search mr-2"></i>Find Customer
+                        </button>
+                    </div>
+                    
+                    <div class="col-span-2 md:col-span-1">
+                        <button type="button" id="createCustomerBtn" onclick="showCreateCustomerModal()" class="action-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/50">
+                            <i class="fas fa-user-plus mr-2"></i>Create Customer
+                        </button>
+                    </div>
+                    
+                    <div class="col-span-2 md:col-span-3"></div>
+                </div>
+
+                <div id="customerDetailsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="customerFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input type="text" id="customerFirstName" class="input-field" required placeholder="Auto-populated" disabled>
+                    </div>
+                    <div>
+                        <label for="customerMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
+                        <input type="text" id="customerMiddleName" class="input-field" placeholder="Auto-populated" disabled>
+                    </div>
+                    <div>
+                        <label for="customerLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input type="text" id="customerLastName" class="input-field" required placeholder="Auto-populated" disabled>
+                    </div>
+
+                    <div>
+                        <label for="customerDOB" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                        <input type="date" id="customerDOB" class="input-field" required placeholder="Auto-populated" disabled>
+                    </div>
+                    <div>
+                        <label for="customerEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="customerEmail" class="input-field" required placeholder="Auto-populated" disabled>
+                    </div>
+                    <div>
+                        <label for="customerPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="customerPhone" class="input-field" required placeholder="Auto-populated" disabled>
+                    </div>
+                    
+                    <div>
+                        <label for="customerAadhar" class="block text-sm font-medium text-gray-700 mb-1">Aadhar Number</label>
+                        <input type="text" id="customerAadhar" class="input-field" required placeholder="Auto-populated" disabled>
+                    </div>
+                    <div>
+                        <label for="customerPan" class="block text-sm font-medium text-gray-700 mb-1">PAN Number</label>
+                        <input type="text" id="customerPan" class="input-field" required placeholder="Auto-populated" disabled>
+                    </div>
+                    <div>
+                        <label for="customerDrivingLicense" class="block text-sm font-medium text-gray-700 mb-1">Driving License</label>
+                        <input type="text" id="customerDrivingLicense" class="input-field" placeholder="Auto-populated" disabled>
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <label for="customerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <textarea id="customerAddress" class="input-field h-24 resize-none" required placeholder="Auto-populated" disabled></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section" id="existingPoliciesSection" style="display:none;">
+                <h2 class="flex items-center"><i class="fas fa-history mr-3 text-2xl"></i>Existing Policy Information</h2>
+                
+                <div id="policySummary" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="p-4 bg-blue-50 border-blue-400 border-l-4 rounded-lg shadow-sm">
+                        <p class="text-sm font-medium text-blue-600">Total Policy Count</p>
+                        <p id="totalPolicyCount" class="text-2xl font-bold text-blue-800">0</p>
+                    </div>
+                    <div class="p-4 bg-emerald-50 border-emerald-400 border-l-4 rounded-lg shadow-sm">
+                        <p class="text-sm font-medium text-emerald-600">Existing Pension Policies</p>
+                        <p id="pensionPolicyCount" class="text-2xl font-bold text-emerald-800">0</p>
+                    </div>
+                    <div class="p-4 bg-amber-50 border-amber-400 border-l-4 rounded-lg shadow-sm">
+                        <p class="text-sm font-medium text-amber-600">Other Policy Count</p>
+                        <p id="otherPolicyCount" class="text-2xl font-bold text-amber-800">0</p>
+                    </div>
+                </div>
+
+                <div id="existingPoliciesContainer" class="space-y-6">
+                </div>
+                
+                <p id="noPoliciesMessage" class="text-gray-500 text-center py-4 hidden">No existing policies found for this customer.</p>
+            </div>
+
+            <div class="form-section">
+                <h2 class="flex items-center"><i class="fas fa-file-contract mr-3 text-2xl"></i>Pension Policy Details (New Policy)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="policyName" class="block text-sm font-medium text-gray-700 mb-1">Policy Name</label>
+                        <select id="policyName" class="input-field" required onchange="handlePolicySelect(this.value)">
+                            <option value="">-- Loading Policies --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="policyStartDate" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                        <input type="date" id="policyStartDate" class="input-field" required>
+                    </div>
+                    <div>
+                        <label for="policyTerm" class="block text-sm font-medium text-gray-700 mb-1">Policy Term (Years)</label>
+                        <input type="number" id="policyTerm" class="input-field" required min="5" max="50" placeholder="Auto-populated">
+                    </div>
+                    
+                    <div>
+                        <label for="premiumAmount" class="block text-sm font-medium text-gray-700 mb-1">Premium Amount ($)</label>
+                        <input type="number" id="premiumAmount" class="input-field"  placeholder="Auto-populated">
+                    </div>
+                    <div>
+                        <label for="paymentFrequency" class="block text-sm font-medium text-gray-700 mb-1">Payment Frequency</label>
+                        <select id="paymentFrequency" class="input-field" required>
+                            <option value="">Select Frequency (Auto-populated)</option>
+                            <option value="MONTHLY">Monthly</option>
+                            <option value="QUATERLY">Quarterly</option>
+                            <option value="YEARLY">Yearly</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="annuityPayoutOption" class="block text-sm font-medium text-gray-700 mb-1">Annuity Payout Option</label>
+                        <select id="annuityPayoutOption" class="input-field" required>
+                            <option value="">Select Payout Type</option>
+                            <option value="Life Annuity">Life Annuity</option>
+                            <option value="Joint Life Annuity">Joint Life Annuity</option>
+                            <option value="Annuity Certain">Annuity Certain (e.g., 10/15/20 years)</option>
+                            <option value="Variable Annuity">Variable Annuity</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="flex items-center"><i class="fas fa-hand-holding-usd mr-3 text-2xl"></i>Pension & Nominee Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="benefitAge" class="block text-sm font-medium text-gray-700 mb-1">Retirement/Benefit Age <span class="text-red-500">*</span></label>
+                        <select id="benefitAge" class="input-field" required>
+                            <option value="">Select Age</option>
+                            <option value="65">65</option>
+                            <option value="75">75</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="nomineeName" class="block text-sm font-medium text-gray-700 mb-1">Nominee Full Name</label>
+                        <input type="text" id="nomineeName" class="input-field" required placeholder="Full Name">
+                    </div>
+                    <div>
+                        <label for="nomineeRelationship" class="block text-sm font-medium text-gray-700 mb-1">Nominee Relationship</label>
+                        <select id="nomineeRelationship" class="input-field" required>
+                            <option value="">Select Relationship</option>
+                            <option value="Spouse">Spouse</option>
+                            <option value="Child">Child</option>
+                            <option value="Parent">Parent</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="nomineeAadhar" class="block text-sm font-medium text-gray-700 mb-1">Nominee Aadhar Number</label>
+                        <input type="text" id="nomineeAadhar" class="input-field" placeholder="Nominee's Aadhar">
+                    </div>
+                    <div>
+                        <label for="nomineePan" class="block text-sm font-medium text-gray-700 mb-1">Nominee PAN Number</label>
+                        <input type="text" id="nomineePan" class="input-field" placeholder="Nominee's PAN">
+                    </div>
+                    <div>
+                        <label for="nomineeDrivingLicense" class="block text-sm font-medium text-gray-700 mb-1">Nominee Driving License</label>
+                        <input type="text" id="nomineeDrivingLicense" class="input-field" placeholder="Nominee's DL">
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Policy Benefits (Riders/Guarantees)</h3>
+                    <div id="benefitsContainer" class="space-y-4">
+                    </div>
+                    <button type="button" id="addBenefitBtn" class="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out shadow-md hover:shadow-lg">
+                        <i class="fas fa-plus mr-2"></i> Add Policy Benefit
+                    </button>
+                    <p id="benefitError" class="text-red-500 text-sm mt-2 hidden">A selected benefit cannot be added again.</p>
+                </div>
+            </div>
+
+            <div class="text-center pt-6 flex justify-center space-x-6">
+                <button type="button" id="resetPolicyBtn" onclick="resetForm()" class="action-btn bg-gray-500 hover:bg-gray-600 text-white font-extrabold px-10 shadow-gray-500/50">
+                    <i class="fas fa-redo mr-2"></i> Reset Form
+                </button>
+                <button type="submit" id="submitPolicyBtn" class="action-btn bg-green-600 hover:bg-green-700 text-white font-extrabold px-10 disabled:opacity-50 shadow-green-500/50" disabled>
+                    <span id="submitText">Create Pension Policy</span>
+                    <div id="loadingSpinner" class="loading-spinner hidden ml-2 inline-block"></div>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="notificationModal" class="notification-modal">
+        <div class="notification-content">
+            <h3 id="notification-title" class="text-xl font-bold mb-3"></h3>
+            <p id="notification-message" class="text-gray-600 mb-6"></p>
+            <button id="notification-close-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                Close & Go to Admin Panel
+            </button>
+        </div>
+    </div>
+    
+    <div id="createCustomerModal" class="notification-modal">
+        <div class="notification-content">
+            <h3 class="text-xl font-bold mb-3 text-indigo-600">Customer Creation Workflow</h3>
+            <p class="text-gray-600 mb-6">This is a mock navigation. In a real application, this would redirect the admin to the dedicated "Create New Customer" page.</p>
+            <button onclick="closeCustomerModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                Close Mock & Continue
+            </button>
+        </div>
+    </div>
+    
+    <div id="searchCustomerModal" class="notification-modal">
+        <div class="notification-content search-modal-content">
+            <h3 class="text-2xl font-bold mb-6 text-cyan-600 border-b pb-2 flex justify-between items-center">
+                <i class="fas fa-search mr-3"></i> Search Customer
+                <button onclick="closeSearchCustomerModal()" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label for="searchName" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <input type="text" id="searchName" class="input-field" placeholder="Full or partial name">
+                </div>
+                <div>
+                    <label for="searchEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="searchEmail" class="input-field" placeholder="Email address">
+                </div>
+                <div>
+                    <label for="searchPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input type="tel" id="searchPhone" class="input-field" placeholder="Phone number">
+                </div>
+                <div>
+                    <label for="searchCustomerNo" class="block text-sm font-medium text-gray-700 mb-1">Customer No</label>
+                    <input type="text" id="searchCustomerNo" class="input-field" placeholder="Customer ID">
+                </div>
+            </div>
+            
+            <div class="text-center pt-2">
+                <button type="button" id="executeSearchBtn" onclick="searchCustomers()" class="action-btn inline-flex bg-purple-600 hover:bg-purple-700 text-white shadow-purple-500/50">
+                    <span id="searchText">Execute Search</span>
+                    <div id="searchLoadingSpinner" class="loading-spinner hidden ml-2 inline-block"></div>
+                </button>
+            </div>
+
+            <div class="mt-8">
+                <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-1">Search Results (<span id="resultCount">0</span>)</h4>
+                <div id="searchResultsContainer" class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-inner max-h-80 overflow-y-auto">
+                    <p id="initialSearchMessage" class="text-center text-gray-500 p-4">Enter search criteria and click Execute Search.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        &copy; <span id="currentYear"></span> Pension Management System. All rights reserved. | Administrator Access
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const PENSION_SERVICE_BASE_URL = 'http://localhost:9091/PensionServices';
+
+        const form = document.getElementById('pensionPolicyForm');
+        const benefitsContainer = document.getElementById('benefitsContainer');
+        const addBenefitBtn = document.getElementById('addBenefitBtn');
+        const submitPolicyBtn = document.getElementById('submitPolicyBtn');
+        
+        // NEW FIELD REFERENCES
+        const customerNumberInputForSearch = document.getElementById('customerNumberInputForSearch');
+        const customerNumberForApi = document.getElementById('customerNumberForApi');
+        
+        const fetchCustomerBtn = document.getElementById('fetchCustomerBtn');
+        const customerStatusP = document.getElementById('customerStatus');
+        const benefitErrorP = document.getElementById('benefitError');
+        const existingPoliciesSection = document.getElementById('existingPoliciesSection');
+        const existingPoliciesContainer = document.getElementById('existingPoliciesContainer');
+        const noPoliciesMessage = document.getElementById('noPoliciesMessage');
+        const policyNameSelect = document.getElementById('policyName');
+        const searchCustomerModal = document.getElementById('searchCustomerModal');
+        const searchResultsContainer = document.getElementById('searchResultsContainer');
+        const initialSearchMessage = document.getElementById('initialSearchMessage');
+        const resultCountSpan = document.getElementById('resultCount');
+        const executeSearchBtn = document.getElementById('executeSearchBtn');
+        const searchLoadingSpinner = document.getElementById('searchLoadingSpinner');
+
+        let domainProductsData = [];
+        let benefitCount = 0;
+
+        const availableBenefits = [
+            'Guaranteed Annual Payout', 
+            'Death Benefit Provision', 
+            'Critical Illness Rider',
+            'Waiver of Premium', 
+            'Inflation Protection', 
+            'Spouse Coverage'
+        ];
+        
+        async function fetchWithRetry(fn, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    return await fn();
+                } catch (error) {
+                    if (i === retries - 1) throw error;
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        function getSelectedBenefits() {
+            return Array.from(document.querySelectorAll('.benefit-select')).map(select => select.value).filter(val => val !== '');
+        }
+
+        function checkDuplicateBenefit(selectElement) {
+            const selectedValue = selectElement.value;
+            const currentBenefitSelects = Array.from(document.querySelectorAll('.benefit-select'));
+            
+            const count = currentBenefitSelects.filter(select => select.value === selectedValue && selectedValue !== '').length;
+
+            if (count > 1) {
+                benefitErrorP.classList.remove('hidden');
+                selectElement.classList.add('border-red-500', 'ring-2', 'ring-red-200');
+                
+                setTimeout(() => {
+                    selectElement.value = '';
+                    selectElement.classList.remove('border-red-500', 'ring-2', 'ring-red-200');
+                    if (getSelectedBenefits().length === new Set(getSelectedBenefits()).size) {
+                         benefitErrorP.classList.add('hidden');
+                    }
+                }, 1000);
+            } else {
+                selectElement.classList.remove('border-red-500', 'ring-2', 'ring-red-200');
+                if (getSelectedBenefits().length === new Set(getSelectedBenefits()).size) {
+                     benefitErrorP.classList.add('hidden');
+                }
+            }
+        }
+
+        function addBenefitField() {
+            const id = benefitCount++;
+            const benefitDiv = document.createElement('div');
+            benefitDiv.className = 'flex gap-3 items-center';
+            
+            let optionsHtml = '<option value="">Select a Benefit</option>';
+            availableBenefits.forEach(benefit => {
+                optionsHtml += `<option value="${benefit}">${benefit}</option>`;
+            });
+
+            benefitDiv.innerHTML = `
+                <select id="benefit-${id}" class="input-field benefit-select" required>
+                    ${optionsHtml}
+                </select>
+                <button type="button" data-id="${id}" class="remove-benefit-btn text-red-500 hover:text-red-700 p-2 rounded-full transition duration-150" title="Remove Benefit">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            `;
+            benefitsContainer.appendChild(benefitDiv);
+            
+            const selectElement = benefitDiv.querySelector('.benefit-select');
+            selectElement.addEventListener('change', () => checkDuplicateBenefit(selectElement));
+
+            benefitDiv.querySelector('.remove-benefit-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                benefitDiv.remove();
+                Array.from(document.querySelectorAll('.benefit-select')).forEach(checkDuplicateBenefit);
+            });
+        }
+
+        addBenefitBtn.addEventListener('click', () => addBenefitField());
+        
+        function renderPolicyTable(title, policies, type) {
+            if (policies.length === 0) return '';
+
+            const headerColor = type === 'Pension' ? 'bg-emerald-600' : 'bg-amber-600';
+            const icon = type === 'Pension' ? 'fas fa-shield-alt' : 'fas fa-briefcase';
+
+            let tableHtml = `
+                <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                    <div class="${headerColor} text-white p-3 font-semibold flex items-center">
+                        <i class="${icon} mr-2"></i> ${title} (${policies.length})
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Policy ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Policy Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Premium ($)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Term</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            policies.forEach(p => {
+                tableHtml += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${p.policyId || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${p.policyName || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${p.policyStatus === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
+                                ${p.policyStatus || 'N/A'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-semibold">$${(p.totalAmount || 0).toLocaleString()}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${p.policyTerm || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            return tableHtml;
+        }
+
+
+        function renderExistingPolicies(policies) {
+            existingPoliciesContainer.innerHTML = '';
+
+            if (!policies || policies.length === 0) {
+                existingPoliciesSection.style.display = 'block';
+                noPoliciesMessage.classList.remove('hidden');
+                document.getElementById('totalPolicyCount').textContent = 0;
+                document.getElementById('pensionPolicyCount').textContent = 0;
+                document.getElementById('otherPolicyCount').textContent = 0;
+                return;
+            }
+
+            const pensionPolicies = policies.filter(p => p.policyType === 'PENSION');
+            const otherPolicies = policies.filter(p => p.policyType !== 'PENSION');
+
+            document.getElementById('totalPolicyCount').textContent = policies.length;
+            document.getElementById('pensionPolicyCount').textContent = pensionPolicies.length;
+            document.getElementById('otherPolicyCount').textContent = otherPolicies.length;
+
+            const pensionHtml = renderPolicyTable('Existing Pension Policies', pensionPolicies, 'Pension');
+            const otherHtml = renderPolicyTable('Other Active Policies', otherPolicies, 'Other');
+
+            existingPoliciesContainer.innerHTML = pensionHtml + otherHtml;
+            noPoliciesMessage.classList.add('hidden');
+            existingPoliciesSection.style.display = 'block';
+        }
+
+        function autoPopulateForm(customerData) {
+            // Updated to populate the new API-specific field
+            customerNumberInputForSearch.value = customerData.customerNumber || ''; 
+            customerNumberForApi.value = customerData.customerNumber || '';
+
+            document.getElementById('customerFirstName').value = customerData.name || '';
+            document.getElementById('customerMiddleName').value = customerData.middleName || '';
+            document.getElementById('customerLastName').value = customerData.surname || '';
+            document.getElementById('customerDOB').value = customerData.dateOfBirth || ''; 
+            document.getElementById('customerEmail').value = customerData.email || '';
+            document.getElementById('customerPhone').value = customerData.phoneNumber || '';
+
+            document.getElementById('customerAddress').value = '';
+            document.getElementById('customerAadhar').value = '';
+            document.getElementById('customerPan').value = '';
+            document.getElementById('customerDrivingLicense').value = '';
+            
+            document.getElementById('premiumAmount').value = '';
+            document.getElementById('paymentFrequency').value = '';
+            document.getElementById('policyTerm').value = '';
+
+            const allPolicies = (customerData.policies || []).flatMap(product => product.policies || []);
+            renderExistingPolicies(allPolicies); 
+
+            submitPolicyBtn.disabled = false;
+        }
+
+        function clearCustomerFields() {
+            const customerFields = [
+                'customerFirstName', 'customerMiddleName', 'customerLastName', 
+                'customerEmail', 'customerPhone', 'customerDOB', 'customerAddress',
+                'customerAadhar', 'customerPan', 'customerDrivingLicense', 
+            ];
+            customerFields.forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('premiumAmount').value = '';
+            document.getElementById('paymentFrequency').value = '';
+            document.getElementById('policyTerm').value = '';
+
+            existingPoliciesSection.style.display = 'none';
+            existingPoliciesContainer.innerHTML = '';
+            noPoliciesMessage.classList.add('hidden');
+            
+            customerNumberForApi.value = ''; // Clear the mandatory API field
+        }
+        
+        function checkCustomerNumber(value) {
+            fetchCustomerBtn.disabled = value.trim().length === 0;
+            customerStatusP.textContent = '';
+            if (value.trim().length === 0) {
+                clearCustomerFields();
+                submitPolicyBtn.disabled = true;
+            }
+        }
+
+        async function fetchCustomerDetails() {
+            const customerNumber = customerNumberInputForSearch.value.trim(); // Get value from the search field
+            if (!customerNumber) return;
+
+            customerStatusP.innerHTML = '<span class="text-blue-500"><i class="fas fa-spinner fa-spin mr-2"></i>Fetching...</span>';
+            fetchCustomerBtn.disabled = true;
+
+            const customerLookupUrl = `${PENSION_SERVICE_BASE_URL}/customer-details?customerNo=${customerNumber}`;
+
+            try {
+                const response = await fetchWithRetry(() => fetch(customerLookupUrl));
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const apiResult = await response.json();
+                
+                if (apiResult.data && apiResult.data.length > 0) {
+                    const customerData = apiResult.data[0]; 
+                    autoPopulateForm(customerData);
+                    customerStatusP.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle mr-2"></i>Customer details fetched!</span>';
+                } else {
+                    const errorMsg = apiResult.errorMessage || 'Customer ID not found or API returned empty data.';
+                    clearCustomerFields();
+                    customerStatusP.innerHTML = `<span class="text-red-600"><i class="fas fa-times-circle mr-2"></i>${errorMsg}</span>`;
+                    submitPolicyBtn.disabled = true;
+                    existingPoliciesSection.style.display = 'none';
+                }
+            } catch (error) {
+                const errorMessage = error.message.includes('Failed to fetch') 
+                    ? 'Network/CORS Error: Could not connect to the customer service API.' 
+                    : error.message;
+                console.error("Customer Lookup API Fetch error:", error);
+                customerStatusP.innerHTML = `<span class="text-red-600"><i class="fas fa-exclamation-triangle mr-2"></i>${errorMessage}</span>`;
+                submitPolicyBtn.disabled = true;
+                existingPoliciesSection.style.display = 'none';
+            } finally {
+                fetchCustomerBtn.disabled = false;
+            }
+        }
+        
+        function showSearchCustomerModal() {
+            searchCustomerModal.classList.add('active');
+            searchResultsContainer.innerHTML = '';
+            resultCountSpan.textContent = '0';
+            initialSearchMessage.classList.remove('hidden');
+        }
+
+        function closeSearchCustomerModal() {
+            searchCustomerModal.classList.remove('active');
+        }
+        
+        function selectCustomerFromSearch(customerData) {
+            // Fix: Ensure customerNumber is always correctly populated in the form input
+            customerNumberInputForSearch.value = customerData.customerNumber || ''; 
+            customerNumberForApi.value = customerData.customerNumber || '';
+            
+            autoPopulateForm(customerData);
+
+            customerStatusP.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle mr-2"></i>Customer selected from search!</span>';
+            
+            closeSearchCustomerModal();
+        }
+
+        async function searchCustomers() {
+            const name = document.getElementById('searchName').value.trim();
+            const email = document.getElementById('searchEmail').value.trim();
+            const phone = document.getElementById('searchPhone').value.trim();
+            const custNo = document.getElementById('searchCustomerNo').value.trim();
+
+            const queryParams = new URLSearchParams();
+            if (name) queryParams.append('name', name);
+            if (email) queryParams.append('email', email);
+            if (phone) queryParams.append('phoneNumber', phone);
+            if (custNo) queryParams.append('customerNo', custNo);
+
+            if (queryParams.toString().length === 0) {
+                searchResultsContainer.innerHTML = '<p class="text-center text-red-500 p-4">Please enter at least one search criteria.</p>';
+                resultCountSpan.textContent = '0';
+                return;
+            }
+
+            executeSearchBtn.disabled = true;
+            document.getElementById('searchText').textContent = 'Searching...';
+            searchLoadingSpinner.classList.remove('hidden');
+            searchResultsContainer.innerHTML = '';
+            initialSearchMessage.classList.add('hidden');
+            resultCountSpan.textContent = '0';
+
+            const searchUrl = `${PENSION_SERVICE_BASE_URL}/customer-details?${queryParams.toString()}`;
+
+            try {
+                const response = await fetchWithRetry(() => fetch(searchUrl));
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const apiResult = await response.json();
+                
+                if (apiResult.data && apiResult.data.length > 0) {
+                    renderSearchResults(apiResult.data);
+                } else {
+                    const message = apiResult.errorMessage || 'No customers found matching the criteria.';
+                    searchResultsContainer.innerHTML = `<p class="text-center text-gray-500 p-4">${message}</p>`;
+                }
+            } catch (error) {
+                const errorMessage = error.message.includes('Failed to fetch') 
+                    ? 'Network/CORS Error: Could not connect to the customer service API.' 
+                    : error.message;
+                console.error("Customer Search API Fetch error:", error);
+                searchResultsContainer.innerHTML = `<p class="text-center text-red-500 p-4">Search failed: ${errorMessage}</p>`;
+            } finally {
+                executeSearchBtn.disabled = false;
+                document.getElementById('searchText').textContent = 'Execute Search';
+                searchLoadingSpinner.classList.add('hidden');
+            }
+        }
+        
+        function renderSearchResults(results) {
+            resultCountSpan.textContent = results.length;
+            
+            let tableHtml = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer No</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            results.forEach(customer => {
+                customer.customerNumber = customer.customerNumber || (customer.name ? customer.name.toUpperCase().substring(0, 3) + Math.floor(Math.random() * 900 + 100) : 'TEMP-ID');
+                
+                const fullCustomerName = `${customer.name || ''} ${customer.middleName || ''} ${customer.surname || ''}`.trim();
+
+                tableHtml += `
+                    <tr class="customer-result-row" onclick='selectCustomerFromSearch(${JSON.stringify(customer)})'>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">${customer.customerNumber}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${fullCustomerName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${customer.email || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${customer.phoneNumber || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+            searchResultsContainer.innerHTML = tableHtml;
+        }
+
+        async function getDomainProducts() {
+            policyNameSelect.innerHTML = '<option value="">-- Fetching Policies --</option>';
+            const url = `${PENSION_SERVICE_BASE_URL}/pension-domain`;
+
+            try {
+                const response = await fetchWithRetry(() => fetch(url));
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const apiResult = await response.json();
+                
+                if (apiResult.data && apiResult.data.length > 0) {
+                    domainProductsData = apiResult.data;
+                    let optionsHtml = '<option value="">-- Select a Policy Product --</option>';
+                    domainProductsData.forEach(product => {
+                        optionsHtml += `<option value="${product.policyName}">${product.policyName}</option>`;
+                    });
+                    policyNameSelect.innerHTML = optionsHtml;
+                } else {
+                    policyNameSelect.innerHTML = '<option value="">-- No Policies Found --</option>';
+                }
+            } catch (error) {
+                console.error("Domain API Fetch error:", error);
+                policyNameSelect.innerHTML = '<option value="">-- Error Loading Policies --</option>';
+            }
+        }
+
+        function handlePolicySelect(policyName) {
+            document.getElementById('policyTerm').value = '';
+            document.getElementById('premiumAmount').value = '';
+            document.getElementById('paymentFrequency').value = '';
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('policyStartDate').value = today;
+
+            if (!policyName) return;
+
+            const selectedProduct = domainProductsData.find(p => p.policyName === policyName);
+
+            if (selectedProduct && selectedProduct.policies && selectedProduct.policies.length > 0) {
+                const policyExample = selectedProduct.policies[0];
+                
+                document.getElementById('policyTerm').value = 10; 
+                
+                // Fix for Issue 2: Direct population of totalAmount without conversion
+                document.getElementById('premiumAmount').value = policyExample.totalAmount; 
+
+                const apiTerm = (policyExample.policyTerm || '').toUpperCase();
+                
+                const paymentFrequencyMap = {
+                    'MONTHLY': 'MONTHLY',
+                    'QUATERLY': 'QUATERLY',
+                    'YEARLY': 'YEARLY',
+                    'QUARTERLY': 'QUATERLY' 
+                };
+
+                document.getElementById('paymentFrequency').value = paymentFrequencyMap[apiTerm] || 'MONTHLY';
+            } else {
+                document.getElementById('policyTerm').value = 10;
+                document.getElementById('premiumAmount').value = 500;
+                document.getElementById('paymentFrequency').value = 'MONTHLY';
+            }
+        }
+
+
+        function resetForm() {
+            form.reset();
+            clearCustomerFields();
+            customerStatusP.textContent = '';
+            benefitErrorP.classList.add('hidden');
+            benefitsContainer.innerHTML = '';
+            benefitCount = 0;
+            addBenefitField();
+            submitPolicyBtn.disabled = true;
+            existingPoliciesSection.style.display = 'none';
+        }
+        
+        function showCreateCustomerModal() {
+            document.getElementById('createCustomerModal').classList.add('active');
+        }
+
+        function closeCustomerModal() {
+            document.getElementById('createCustomerModal').classList.remove('active');
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitText = document.getElementById('submitText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            if (getSelectedBenefits().length !== new Set(getSelectedBenefits()).size) {
+                 benefitErrorP.classList.remove('hidden');
+                 return;
+            } else {
+                 benefitErrorP.classList.add('hidden');
+            }
+
+            const benefits = getSelectedBenefits();
+
+            const formData = {
+                customerProfile: {
+                    // *** FIX: Now using the dedicated, locked API field ***
+                    customerNumber: customerNumberForApi.value, 
+                    firstName: document.getElementById('customerFirstName').value,
+                    lastName: document.getElementById('customerLastName').value,
+                },
+                policyDetails: {
+                    policyName: document.getElementById('policyName').value,
+                    policyTermYears: parseInt(document.getElementById('policyTerm').value),
+                    policyStartDate: document.getElementById('policyStartDate').value,
+                    premiumAmount: parseFloat(document.getElementById('premiumAmount').value),
+                    paymentFrequency: document.getElementById('paymentFrequency').value,
+                },
+                pensionDetails: {
+                    benefitAge: document.getElementById('benefitAge').value,
+                    nominee: document.getElementById('nomineeName').value,
+                    benefits: benefits,
+                }
+            };
+            
+            submitPolicyBtn.disabled = true;
+            submitText.textContent = 'Creating...';
+            loadingSpinner.classList.remove('hidden');
+
+            try {
+                const apiEndpoint = PENSION_SERVICE_BASE_URL + '/api/createPensionPolicy'; 
+                
+                const mockResponse = await fetchWithRetry(() => 
+                    new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            if (Math.random() < 0.9) { 
+                                resolve({ ok: true, json: () => Promise.resolve({ success: true, policyId: 'PPN-' + Math.floor(Math.random() * 10000), message: 'Policy created successfully.' }) });
+                            } else {
+                                reject(new Error('Mock Server Error: Internal server error during creation.'));
+                            }
+                        }, 2000); 
+                    })
+                );
+
+                const result = await mockResponse.json();
+                showNotification('Success!', `Pension Policy ${result.policyId} created successfully for customer ${formData.customerProfile.customerNumber}.`, true);
+
+            } catch (error) {
+                showNotification('Submission Failed', `There was an error creating the policy. Details: ${error.message}`, false);
+            } finally {
+                submitPolicyBtn.disabled = false;
+                submitText.textContent = 'Create Pension Policy';
+                loadingSpinner.classList.add('hidden');
+            }
+        });
+        
+        const notificationModal = document.getElementById('notificationModal');
+        const notificationTitle = document.getElementById('notification-title');
+        const notificationMessage = document.getElementById('notification-message');
+        const notificationCloseBtn = document.getElementById('notification-close-btn');
+
+        function showNotification(title, message, isSuccess = true) {
+            notificationTitle.textContent = title;
+            notificationMessage.textContent = message;
+            notificationTitle.className = `text-xl font-bold mb-3 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+            notificationModal.classList.add('active');
+        }
+
+        notificationCloseBtn.addEventListener('click', () => {
+            notificationModal.classList.remove('active');
+            window.location.href = 'PensionManagementAdmin.html'; 
+        });
+
+        window.onload = function() {
+            addBenefitField();
+            getDomainProducts();
+        }
+
+    </script>
+</body>
+</html>
