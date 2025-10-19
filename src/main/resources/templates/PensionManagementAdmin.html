@@ -791,7 +791,6 @@
                                 </select>
                             </div>
                             <div class="flex justify-end pt-2 gap-2">
-                                <button id="view-bank-details-btn" class="action-button secondary"><i class="fas fa-university mr-2"></i> View Bank Details</button>
                                 <button onclick="updatePolicyDetails()" class="action-button"><i class="fas fa-save mr-2"></i> Update Policy</button>
                             </div>
                         </div>
@@ -839,8 +838,36 @@
                     </div>
                 </div>
 
+                <div class="policy-detail-section">
+                    <h3>Nominee Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+                        <div>
+                            <label for="detail-nominee-name" class="block text-sm font-medium text-gray-600">Nominee Name:</label>
+                            <input type="text" id="detail-nominee-name" class="input-field mt-1">
+                        </div>
+                        <div>
+                             <label for="detail-nominee-relationship" class="block text-sm font-medium text-gray-600">Relationship:</label>
+                            <input type="text" id="detail-nominee-relationship" class="input-field mt-1">
+                        </div>
+                    </div>
+                    <div class="flex justify-end pt-4">
+                        <button onclick="updateNomineeDetails()" class="action-button"><i class="fas fa-user-edit mr-2"></i> Update Nominee</button>
+                    </div>
+                </div>
+
+                <div id="bank-details-section" class="policy-detail-section">
+                    <h3>Bank Account Details</h3>
+                    <div id="bank-details-content" class="space-y-4">
+                        <!-- Bank cards will be rendered here -->
+                    </div>
+                    <p id="no-bank-accounts-message" class="text-center text-gray-500 mt-4 hidden">No bank accounts found for this customer.</p>
+                    <div id="bank-pagination-controls" class="flex justify-between items-center mt-4">
+                        <!-- Pagination will be rendered here -->
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div class="policy-detail-section">
+                     <div class="policy-detail-section">
                         <h3>Fund Performance</h3>
                         <div class="space-y-2 text-gray-700">
                             <div>
@@ -851,35 +878,11 @@
                             <button onclick="updateFundDetails()" class="action-button px-4 py-2 mt-2"><i class="fas fa-sync-alt mr-2"></i> Update Fund Value</button>
                         </div>
                     </div>
-
                     <div class="policy-detail-section">
-                        <h3>Nominee Details</h3>
-                        <div class="space-y-2 text-gray-700">
-                            <div>
-                                <label for="detail-nominee-name" class="block text-sm font-medium text-gray-600">Nominee Name:</label>
-                                <input type="text" id="detail-nominee-name" class="input-field mt-1">
-                            </div>
-                            <p class="text-sm text-gray-500">Ensuring your loved ones are protected.</p>
-                            <button onclick="updateNomineeDetails()" class="action-button mt-2"><i class="fas fa-user-edit mr-2"></i> Update Nominee</button>
-                        </div>
+                        <h3>Key Benefits</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700" id="detail-benefits-list"></ul>
+                        <button onclick="openAddBenefitModal()" class="action-button mt-4"><i class="fas fa-plus-circle mr-2"></i> Add/Edit Benefits</button>
                     </div>
-                </div>
-
-                <div id="bank-details-section" class="policy-detail-section hidden">
-                    <h3>Bank Account Details</h3>
-                    <div id="bank-details-content" class="space-y-4">
-                        <!-- Bank cards will be rendered here -->
-                    </div>
-                    <p id="no-bank-accounts-message" class="text-center text-gray-500 mt-4 hidden">No bank accounts found for this customer.</p>
-                    <div id="bank-pagination-controls" class="flex justify-between items-center mt-4">
-                        <!-- Pagination will be rendered here -->
-                    </div>
-                </div>
-                
-                <div class="policy-detail-section mb-6">
-                    <h3>Key Benefits</h3>
-                    <ul class="list-disc list-inside space-y-2 text-gray-700" id="detail-benefits-list"></ul>
-                    <button onclick="openAddBenefitModal()" class="action-button mt-4"><i class="fas fa-plus-circle mr-2"></i> Add/Edit Benefits</button>
                 </div>
                
                 <div class="policy-detail-section">
@@ -977,7 +980,7 @@
     <footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
     
     <script>
-        const BANK_SERVICE_BASE_URL = 'http://localhost:8081/bankService';
+        const PENSION_SERVICE_BASE_URL = 'http://localhost:9091/pensionServices';
 
         const config = { 
             loginUrl: 'login', 
@@ -987,12 +990,12 @@
         };
 
         let allPensionPolicies = [
-            { id: 1, policyNumber: "PENSION/001/2025", policyHolder: "John Doe", customerNumber: "T0000032025", startDate: "2025-01-01", policyStatus: "ACTIVE", premiumAmount: 500.00, currency: "INR", paymentFrequency: "Monthly", currentAge: 35, startAge: 18, benefitAge: 60, maturityDate: "2050-01-01", fundValue: 150000.00, fundLastUpdated: "2025-08-20", nominee: "Jane Doe", lastPaymentDate: "2025-07-20", nextPaymentDate: "2025-08-20", benefits: [ "₹ 50,00,000 lump sum at age 60", "₹ 50,000 per month annuity option post 60", "100% of fund value or 10 times annual premium, whichever is higher (Death Benefit)", "Flexible payment options (Monthly, Quarterly, Yearly)" ], paymentHistory: [ { id: 101, date: "2025-01-20", amount: 500.00, status: "Paid" }, { id: 102, date: "2025-02-20", amount: 500.00, status: "Paid" }, { id: 103, date: "2025-03-20", amount: 500.00, status: "Paid" }, { id: 104, date: "2025-04-20", amount: 500.00, status: "Paid" }, { id: 105, date: "2025-05-20", amount: 500.00, status: "Paid" }, { id: 106, date: "2025-06-20", amount: 500.00, status: "Paid" }, { id: 107, date: "2025-07-20", amount: 500.00, status: "Paid" }, ] },
-            { id: 2, policyNumber: "PENSION/002/2025", policyHolder: "Alice Smith", customerNumber: "CUST12346", startDate: "2025-03-10", policyStatus: "IN_PROGRESS", premiumAmount: 750.00, currency: "INR", paymentFrequency: "Quarterly", currentAge: 40, startAge: 25, benefitAge: 65, maturityDate: "2050-03-10", fundValue: 50000.00, fundLastUpdated: "2025-08-15", nominee: "Bob Smith", lastPaymentDate: "2025-06-10", nextPaymentDate: "2025-09-10", benefits: [ "₹ 75,00,000 lump sum at age 65", "₹ 70,000 per month annuity option post 65" ], paymentHistory: [ { id: 201, date: "2025-03-10", amount: 750.00, status: "Paid" }, { id: 202, date: "2025-06-10", amount: 750.00, status: "Paid" }, ] },
-            { id: 3, policyNumber: "PENSION/003/2025", policyHolder: "Charlie Brown", customerNumber: "CUST12347", startDate: "2024-11-01", policyStatus: "APPROVED", premiumAmount: 300.00, currency: "INR", paymentFrequency: "Yearly", currentAge: 28, startAge: 20, benefitAge: 55, maturityDate: "2050-11-01", fundValue: 100000.00, fundLastUpdated: "2025-08-01", nominee: "Sally Brown", lastPaymentDate: "2024-11-01", nextPaymentDate: "2025-11-01", benefits: [ "₹ 30,00,000 lump sum at age 55" ], paymentHistory: [ { id: 301, date: "2024-11-01", amount: 300.00, status: "Paid" }, ] },
-            { id: 4, policyNumber: "PENSION/004/2025", policyHolder: "Diana Prince", customerNumber: "CUST12348", startDate: "2023-05-15", policyStatus: "REJECTED", premiumAmount: 600.00, currency: "INR", paymentFrequency: "Monthly", currentAge: 50, startAge: 45, benefitAge: 60, maturityDate: "2038-05-15", fundValue: 0.00, fundLastUpdated: "2023-05-15", nominee: "Steve Trevor", lastPaymentDate: "2023-05-15", nextPaymentDate: "2023-06-15", benefits: [], paymentHistory: [ { id: 401, date: "2023-05-15", amount: 600.00, status: "Paid" }, ] },
-            { id: 5, policyNumber: "PENSION/005/2025", policyHolder: "Eva Green", customerNumber: "CUST12349", startDate: "2020-01-01", policyStatus: "LAPSED", premiumAmount: 400.00, currency: "INR", paymentFrequency: "Monthly", currentAge: 45, startAge: 30, benefitAge: 60, maturityDate: "2045-01-01", fundValue: 80000.00, fundLastUpdated: "2022-12-31", nominee: "James Bond", lastPaymentDate: "2022-11-01", nextPaymentDate: "2022-12-01", benefits: [ "Reduced paid-up sum at maturity" ], paymentHistory: [ { id: 501, date: "2020-01-01", amount: 400.00, status: "Paid" }, { id: 502, date: "2020-02-01", amount: 400.00, status: "Paid" }, { id: 503, date: "2020-03-01", amount: 400.00, status: "Paid" }, { id: 504, date: "2020-04-01", amount: 400.00, status: "Unpaid" }, ] },
-            { id: 6, policyNumber: "PENSION/006/2025", policyHolder: "Frank White", customerNumber: "CUST12350", startDate: "2015-06-01", policyStatus: "MATURED", premiumAmount: 1000.00, currency: "INR", paymentFrequency: "Yearly", currentAge: 62, startAge: 40, benefitAge: 60, maturityDate: "2035-06-01", fundValue: 2500000.00, fundLastUpdated: "2035-06-01", nominee: "Grace White", lastPaymentDate: "2034-06-01", nextPaymentDate: null, benefits: [ "₹ 25,00,000 lump sum received", "Option for monthly annuity commenced" ], paymentHistory: [] },
+            { id: 1, policyNumber: "PENSION/001/2025", policyHolder: "John Doe", customerNumber: "T0000032025", startDate: "2025-01-01", policyStatus: "ACTIVE", premiumAmount: 500.00, currency: "INR", paymentFrequency: "Monthly", currentAge: 35, startAge: 18, benefitAge: 60, maturityDate: "2050-01-01", fundValue: 150000.00, fundLastUpdated: "2025-08-20", nominee: { name: "Jane Doe", relationship: "Spouse"}, lastPaymentDate: "2025-07-20", nextPaymentDate: "2025-08-20", benefits: [ "₹ 50,00,000 lump sum at age 60", "₹ 50,000 per month annuity option post 60", "100% of fund value or 10 times annual premium, whichever is higher (Death Benefit)", "Flexible payment options (Monthly, Quarterly, Yearly)" ], paymentHistory: [ { id: 101, date: "2025-01-20", amount: 500.00, status: "Paid" }, { id: 102, date: "2025-02-20", amount: 500.00, status: "Paid" }, { id: 103, date: "2025-03-20", amount: 500.00, status: "Paid" }, { id: 104, date: "2025-04-20", amount: 500.00, status: "Paid" }, { id: 105, date: "2025-05-20", amount: 500.00, status: "Paid" }, { id: 106, date: "2025-06-20", amount: 500.00, status: "Paid" }, { id: 107, date: "2025-07-20", amount: 500.00, status: "Paid" }, ] },
+            { id: 2, policyNumber: "PENSION/002/2025", policyHolder: "Alice Smith", customerNumber: "CUST12346", startDate: "2025-03-10", policyStatus: "IN_PROGRESS", premiumAmount: 750.00, currency: "INR", paymentFrequency: "Quarterly", currentAge: 40, startAge: 25, benefitAge: 65, maturityDate: "2050-03-10", fundValue: 50000.00, fundLastUpdated: "2025-08-15", nominee: { name: "Bob Smith", relationship: "Son" }, lastPaymentDate: "2025-06-10", nextPaymentDate: "2025-09-10", benefits: [ "₹ 75,00,000 lump sum at age 65", "₹ 70,000 per month annuity option post 65" ], paymentHistory: [ { id: 201, date: "2025-03-10", amount: 750.00, status: "Paid" }, { id: 202, date: "2025-06-10", amount: 750.00, status: "Paid" }, ] },
+            { id: 3, policyNumber: "PENSION/003/2025", policyHolder: "Charlie Brown", customerNumber: "CUST12347", startDate: "2024-11-01", policyStatus: "APPROVED", premiumAmount: 300.00, currency: "INR", paymentFrequency: "Yearly", currentAge: 28, startAge: 20, benefitAge: 55, maturityDate: "2050-11-01", fundValue: 100000.00, fundLastUpdated: "2025-08-01", nominee: { name: "Sally Brown", relationship: "Sister"}, lastPaymentDate: "2024-11-01", nextPaymentDate: "2025-11-01", benefits: [ "₹ 30,00,000 lump sum at age 55" ], paymentHistory: [ { id: 301, date: "2024-11-01", amount: 300.00, status: "Paid" }, ] },
+            { id: 4, policyNumber: "PENSION/004/2025", policyHolder: "Diana Prince", customerNumber: "CUST12348", startDate: "2023-05-15", policyStatus: "REJECTED", premiumAmount: 600.00, currency: "INR", paymentFrequency: "Monthly", currentAge: 50, startAge: 45, benefitAge: 60, maturityDate: "2038-05-15", fundValue: 0.00, fundLastUpdated: "2023-05-15", nominee: { name: "Steve Trevor", relationship: "Partner" }, lastPaymentDate: "2023-05-15", nextPaymentDate: "2023-06-15", benefits: [], paymentHistory: [ { id: 401, date: "2023-05-15", amount: 600.00, status: "Paid" }, ] },
+            { id: 5, policyNumber: "PENSION/005/2025", policyHolder: "Eva Green", customerNumber: "CUST12349", startDate: "2020-01-01", policyStatus: "LAPSED", premiumAmount: 400.00, currency: "INR", paymentFrequency: "Monthly", currentAge: 45, startAge: 30, benefitAge: 60, maturityDate: "2045-01-01", fundValue: 80000.00, fundLastUpdated: "2022-12-31", nominee: { name: "James Bond", relationship: "Friend" }, lastPaymentDate: "2022-11-01", nextPaymentDate: "2022-12-01", benefits: [ "Reduced paid-up sum at maturity" ], paymentHistory: [ { id: 501, date: "2020-01-01", amount: 400.00, status: "Paid" }, { id: 502, date: "2020-02-01", amount: 400.00, status: "Paid" }, { id: 503, date: "2020-03-01", amount: 400.00, status: "Paid" }, { id: 504, date: "2020-04-01", amount: 400.00, status: "Unpaid" }, ] },
+            { id: 6, policyNumber: "PENSION/006/2025", policyHolder: "Frank White", customerNumber: "CUST12350", startDate: "2015-06-01", policyStatus: "MATURED", premiumAmount: 1000.00, currency: "INR", paymentFrequency: "Yearly", currentAge: 62, startAge: 40, benefitAge: 60, maturityDate: "2035-06-01", fundValue: 2500000.00, fundLastUpdated: "2035-06-01", nominee: { name: "Grace White", relationship: "Spouse"}, lastPaymentDate: "2034-06-01", nextPaymentDate: null, benefits: [ "₹ 25,00,000 lump sum received", "Option for monthly annuity commenced" ], paymentHistory: [] },
         ];
 
         let mockUpcomingRequests = [
@@ -1284,10 +1287,11 @@
                 showNotification('Policy not found.', 'error', 'Error');
                 return;
             }
+            
+            // Set customer number and immediately fetch bank details
             currentCustomerForBank = currentActivePolicy.customerNumber;
-            document.getElementById('bank-details-section').classList.add('hidden');
-            document.getElementById('bank-details-content').innerHTML = '';
-            document.getElementById('bank-pagination-controls').innerHTML = '';
+            fetchBankDetails(currentCustomerForBank, 0, 2);
+
             populatePolicyDetailModal(currentActivePolicy);
             openModal('policyDetailAdminModal');
         }
@@ -1325,7 +1329,8 @@
             document.getElementById('detail-next-payment-date').value = policy.nextPaymentDate;
             document.getElementById('detail-fund-value').value = policy.fundValue;
             document.getElementById('detail-fund-last-updated').textContent = policy.fundLastUpdated;
-            document.getElementById('detail-nominee-name').value = policy.nominee;
+            document.getElementById('detail-nominee-name').value = policy.nominee.name;
+            document.getElementById('detail-nominee-relationship').value = policy.nominee.relationship;
             renderDetailBenefitsList();
             renderDetailPaymentHistory();
         }
@@ -1365,7 +1370,8 @@
 
         function updateNomineeDetails() {
             if (!currentActivePolicy) return;
-            currentActivePolicy.nominee = document.getElementById('detail-nominee-name').value;
+            currentActivePolicy.nominee.name = document.getElementById('detail-nominee-name').value;
+            currentActivePolicy.nominee.relationship = document.getElementById('detail-nominee-relationship').value;
             showNotification('Nominee details updated successfully!', 'success');
         }
 
@@ -1428,23 +1434,28 @@
 
         // --- BANK DETAILS ---
         async function fetchBankDetails(customerNo, page = 0, size = 2) {
+            const container = document.getElementById('bank-details-content');
+            const paginationControls = document.getElementById('bank-pagination-controls');
+            container.innerHTML = `<div class="flex items-center justify-center p-4"><i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i><span class="ml-2">Loading bank details...</span></div>`;
+            paginationControls.innerHTML = '';
+            
             if (!customerNo) {
-                showNotification('Customer number is missing.', 'error');
+                container.innerHTML = `<p class="text-center text-red-500 p-4">Customer number is missing.</p>`;
                 return;
             }
-            const container = document.getElementById('bank-details-content');
-            container.innerHTML = `<div class="flex items-center justify-center p-4"><i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i><span class="ml-2">Loading bank details...</span></div>`;
-            document.getElementById('bank-details-section').classList.remove('hidden');
 
             try {
-				customerNo='T0000032025';
-                const response = await fetch(`${BANK_SERVICE_BASE_URL}/bank-details?customerNo=${customerNo}&page=${page}&size=${size}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+				// Using a mock customer number for demonstration as per API response
+				const effectiveCustomerNo = 'T0000032025';
+                const response = await fetch(`${PENSION_SERVICE_BASE_URL}/bank-details?customerNo=${effectiveCustomerNo}&page=${page}&size=${size}`);
+				
+				 if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
                 }
                 const result = await response.json();
 
-                if (result.status === "Success" && result.data) {
+                if (result.status === "Success" && result.data && result.data.content) {
                     renderBankDetails(result.data.content);
                     renderPaginationControls(result.data);
                 } else {
@@ -1454,7 +1465,7 @@
                 console.error("Fetch Bank Details API error:", error);
                 container.innerHTML = `<p class="text-center text-red-500 p-4">Failed to load bank details: ${error.message}</p>`;
                 document.getElementById('no-bank-accounts-message').classList.add('hidden');
-                document.getElementById('bank-pagination-controls').innerHTML = '';
+                paginationControls.innerHTML = '';
             }
         }
 
@@ -1484,10 +1495,11 @@
         function renderPaginationControls(pageData) {
             const container = document.getElementById('bank-pagination-controls');
             container.innerHTML = '';
+            if (pageData.totalPages <= 1) return;
 
             const prevButton = document.createElement('button');
             prevButton.innerHTML = `<i class="fas fa-arrow-left mr-2"></i> Previous`;
-            prevButton.className = 'action-button secondary';
+            prevButton.className = 'action-button secondary text-sm px-3 py-1';
             prevButton.disabled = pageData.first;
             prevButton.onclick = () => fetchBankDetails(currentCustomerForBank, pageData.number - 1, 2);
             
@@ -1497,7 +1509,7 @@
 
             const nextButton = document.createElement('button');
             nextButton.innerHTML = `Next <i class="fas fa-arrow-right ml-2"></i>`;
-            nextButton.className = 'action-button secondary';
+            nextButton.className = 'action-button secondary text-sm px-3 py-1';
             nextButton.disabled = pageData.last;
             nextButton.onclick = () => fetchBankDetails(currentCustomerForBank, pageData.number + 1, 2);
 
@@ -1619,13 +1631,6 @@
             });
             document.getElementById('confirm-delete-btn').addEventListener('click', confirmDeletePolicy);
             document.getElementById('cancel-delete-btn').addEventListener('click', () => closeModal('deleteConfirmationModal'));
-            document.getElementById('view-bank-details-btn').addEventListener('click', () => {
-                if(currentCustomerForBank) {
-                    fetchBankDetails(currentCustomerForBank, 0, 2);
-                } else {
-                    showNotification('No customer selected for bank details lookup.', 'error');
-                }
-            });
 
             // View Toggle Logic
             const gridViewBtn = document.getElementById('grid-view-btn');

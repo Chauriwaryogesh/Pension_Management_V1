@@ -84,6 +84,7 @@ public class CommonConstant {
 	public static final String END_DATE = "9999-01-01 00:00:00.0";
 	public static final String APPLY = "APPLY";
 	public static final String POLICY_DOMAIN_API = "policy.domain.api";
+	public static final String BANK_SEARCH_API = "bank.search.api";
 	
 	
 

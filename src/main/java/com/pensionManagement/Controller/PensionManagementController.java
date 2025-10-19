@@ -1,8 +1,12 @@
 package com.pensionManagement.Controller;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,14 +14,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.generic.Modal.BankDetailsDTO;
+import com.generic.Modal.CustomerDTO;
+import com.generic.Modal.GroupedPolicyDTO;
 import com.pensionManagement.CommonConstants.CommonConstant;
-import com.pensionManagement.Modal.CustomerDTO;
-import com.pensionManagement.Modal.GroupedPolicyDTO;
 import com.pensionManagement.Service.IPensionService;
 import com.pensionManagement.Service.ResponseEntity;
 
 @RestController
-@RequestMapping("/PensionServices")
+@RequestMapping("/pensionServices")
 public class PensionManagementController {
 	
 	@Autowired
@@ -59,6 +64,38 @@ public class PensionManagementController {
 		}
 		return response;
 	}
+	@GetMapping(value = "/bank-details")
+	public ResponseEntity<Map<String, Object>> getBankDetails(
+			@RequestParam(value = "bankId", required = false) String bankId,
+			@RequestParam(value = "bankAccNo", required = false) String bankAccNo,
+			@RequestParam(value = "policyNo", required = false) String policyNo,
+			@RequestParam(value = "customerNo", required = false) String customerNo,
+			@RequestParam(value = "holderName", required = false) String holderName,
+			@RequestParam(value = "bankName", required = false) String bankName,
+			@RequestParam(value = "accountType", required = false) String accountType,
+			@RequestParam(value = "deletedFlag", required = false) String deletedFlag,
+			@RequestParam(value = "status", required = false) String status, // e.g., "Active,Pending"
+			@RequestParam(value = "createdDateFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdDateFrom,
+			@RequestParam(value = "createdDateTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdDateTo,
+			@RequestParam(value = "search", required = false) String globalSearch, // For header search bar
+			@RequestHeader(value = "userCode", required = false) String userCode,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+		//ResponseEntity<Map<String, Object>> response = new ResponseEntity<>();
+		ResponseEntity<Map<String, Object>> bankDetails = pensionSerice.getBankDetails(bankAccNo, policyNo, customerNo,
+				holderName, bankName, accountType, status, createdDateFrom, createdDateTo, globalSearch, userCode,
+				page,size,deletedFlag,bankId);
+//		if (bankDetails != null && !bankDetails.isEmpty()) {
+//			response.setData(bankDetails);
+//			response.setStatus(CommonConstant.SUCCESS);
+//		} else {
+//			response.setErrorMessage("No Bank account found for Customer");
+//			response.setStatus(CommonConstant.FAILURE);
+//		}
+		return bankDetails;
+	}	
+	
+	
+	
 	@RequestMapping(value = "/count", method = RequestMethod.GET, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
 	public String getCount() {
 		return "Hello world";
