@@ -10,7 +10,7 @@
     <style>
         body, html {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Gray 100 */
+            background-color: #f1f5f9; /* Slate 100 */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -18,44 +18,31 @@
         .main-content {
             flex-grow: 1;
         }
-        .header {
-            background-color: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        .footer {
-            background-color: #1f2937; /* Gray 800 */
-            color: #d1d5db; /* Gray 300 */
-            padding: 1rem 0;
-            text-align: center;
-            font-size: 0.875rem;
-        }
         .form-section {
             background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            border: 1px solid #e5e7eb;
         }
         .form-section h2 {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #111827;
+            color: #1e293b; /* Slate 800 */
             margin-bottom: 1.25rem;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e2e8f0; /* Slate 200 */
             padding-bottom: 0.75rem;
         }
         .label {
             display: block;
             font-size: 0.875rem;
             font-weight: 500;
-            color: #374151;
+            color: #475569; /* Slate 600 */
             margin-bottom: 0.25rem;
         }
         .input-field {
             padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
+            border: 1px solid #cbd5e1; /* Slate 300 */
             border-radius: 6px;
             transition: all 0.2s;
             width: 100%;
@@ -63,100 +50,91 @@
             font-size: 0.875rem;
         }
         .input-field:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            border-color: #4f46e5; /* Indigo 600 */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
             outline: none;
         }
         .input-field:disabled {
-            background-color: #f9fafb;
-            color: #6b7280;
+            background-color: #f8fafc; /* Slate 50 */
+            color: #64748b; /* Slate 500 */
             cursor: not-allowed;
         }
-        /* Button Styles */
+        
+        /* --- Button Styles --- */
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: background-color 0.2s ease-in-out;
+            font-weight: 600;
+            padding: 0.5rem 1rem; /* Reduced padding */
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
             border: 1px solid transparent;
             font-size: 0.875rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
             cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
-        .btn .fas {
-            margin-right: 0.5rem;
+        .btn .fas, .btn .far {
+            margin-right: 0.6rem;
             font-size: 0.9em;
         }
+
+        /* --- New Redesigned Primary Button --- */
+        .btn-glow {
+            background-image: linear-gradient(to right, #4f46e5 0%, #818cf8 51%, #4f46e5 100%);
+            background-size: 200% auto;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px 0 rgba(79, 70, 229, 0.4);
+        }
+        .btn-glow:hover:not(:disabled) {
+            background-position: right center;
+            box-shadow: 0 6px 20px 0 rgba(79, 70, 229, 0.5);
+            transform: translateY(-2px);
+        }
+
         .btn-primary { background-color: #3b82f6; color: white; border-color: #3b82f6; }
         .btn-primary:hover:not(:disabled) { background-color: #2563eb; }
         .btn-secondary { background-color: #10b981; color: white; border-color: #10b981; }
         .btn-secondary:hover:not(:disabled) { background-color: #059669; }
-        .btn-accent { background-color: #6366f1; color: white; border-color: #6366f1; }
-        .btn-accent:hover:not(:disabled) { background-color: #4f46e5; }
         .btn-success { background-color: #22c55e; color: white; border-color: #22c55e; }
         .btn-success:hover:not(:disabled) { background-color: #16a34a; }
         .btn-danger { background-color: #ef4444; color: white; border-color: #ef4444; }
         .btn-danger:hover:not(:disabled) { background-color: #dc2626; }
         .btn-warning { background-color: #f59e0b; color: white; border-color: #f59e0b; }
         .btn-warning:hover:not(:disabled) { background-color: #d97706; }
-        .btn-light { background-color: #6b7280; color: white; border-color: #6b7280; }
-        .btn-light:hover:not(:disabled) { background-color: #4b5563; }
+        .btn-light { background-color: #64748b; color: white; border-color: #64748b; }
+        .btn-light:hover:not(:disabled) { background-color: #475569; }
         
         /* Modals and Loading */
         .notification-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
         }
         .notification-modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
         .notification-content, .search-modal-content {
-            background-color: #fefefe;
-            padding: 25px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            animation: fadeIn 0.3s ease-out;
+            background-color: #fefefe; padding: 25px; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); text-align: center; animation: fadeIn 0.3s ease-out;
         }
         .search-modal-content {
-            max-width: 800px;
-            text-align: left;
+            max-width: 800px; text-align: left;
         }
         .loading-spinner {
-            border: 3px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #ffffff;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            animation: spin 1s linear infinite;
+            border: 3px solid rgba(0, 0, 0, 0.1); border-left-color: #ffffff; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .customer-result-row {
-            cursor: pointer;
-            transition: background-color 0.15s ease-in-out;
+            cursor: pointer; transition: background-color 0.15s ease-in-out;
         }
         .customer-result-row:hover {
             background-color: #eff6ff; /* blue-50 */
@@ -165,62 +143,92 @@
 </head>
 <body>
 
-    <header class="header sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-            <div class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-money-check-alt mr-3 text-blue-600"></i>
-                Pension Management System
+    <!-- Redesigned Header -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                         <i class="fas fa-shield-alt text-2xl text-cyan-400"></i>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-4 flex items-baseline space-x-4">
+                            <span class="text-white px-3 py-2 text-md font-semibold">Pension Management Services V1</span>
+                            <a href="#" class="text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="#" class="bg-slate-800 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Enrollment</a>
+                            <a href="#" class="text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Policies</a>
+                            <a href="#" class="text-gray-300 hover:bg-slate-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Reports</a>
+                        </div>
+                    </div>
+                </div>
+                 <div class="hidden md:block">
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <button type="button" class="bg-slate-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-white">
+                            <span class="sr-only">View notifications</span>
+                            <i class="far fa-bell"></i>
+                        </button>
+                        <div class="ml-3 relative flex items-center">
+                             <span id="userCodeDisplay" class="text-gray-300 text-sm font-medium mr-3"></span>
+                            <div>
+                                <button type="button" class="max-w-xs bg-slate-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                    <span class="sr-only">Open user menu</span>
+                                    <img class="h-8 w-8 rounded-full" src="https://placehold.co/100x100/E2E8F0/475569?text=U" alt="User placeholder image">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <nav>
-                <a href="#" class="text-gray-600 hover:text-blue-600 transition duration-150 ease-in-out font-medium text-sm mr-4">Dashboard</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 transition duration-150 ease-in-out font-medium text-sm">Reports</a>
-            </nav>
         </div>
     </header>
 
+
     <div class="main-content container mx-auto p-4 md:p-8 max-w-7xl">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">
+        <h1 class="text-3xl font-bold text-slate-800 mb-6">
             New Pension Policy Enrollment
         </h1>
         
         <form id="pensionPolicyForm" class="space-y-6">
 
             <div class="form-section">
-                <h2 class="flex items-center"><i class="fas fa-user-circle mr-3 text-lg"></i>Customer Profile & Lookup</h2>
+                <h2 class="flex items-center"><i class="fas fa-user-circle mr-3 text-lg text-indigo-500"></i>Customer Profile & Lookup</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6 items-end">
-                    
-                    <div class="col-span-2 md:col-span-1">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end">
+                    <div class="md:col-span-2">
                         <label for="customerNumberInputForSearch" class="label">Customer No. (Search)</label>
                         <input type="text" id="customerNumberInputForSearch" class="input-field" placeholder="Enter Customer ID" onkeyup="checkCustomerNumber(this.value)">
                     </div>
-
-                    <div class="col-span-2 md:col-span-1">
-                        <label for="customerNumberForApi" class="label">Customer No. (Policy) <span class="text-red-500">*</span></label>
-                        <input type="text" id="customerNumberForApi" required class="input-field" placeholder="Populates after search" disabled>
-                        <p id="customerStatus" class="text-xs mt-1 h-4"></p>
-                    </div>
-
                     <div>
-                        <button type="button" id="fetchCustomerBtn" onclick="fetchCustomerDetails()" class="btn w-full btn-primary" disabled>
+                        <button type="button" id="fetchCustomerBtn" onclick="fetchCustomerDetails()" class="btn btn-primary" disabled>
                             <i class="fas fa-database"></i>Fetch Details
                         </button>
                     </div>
-                    
                     <div>
-                        <button type="button" id="searchCustomerBtn" onclick="showSearchCustomerModal()" class="btn w-full btn-secondary">
+                        <button type="button" id="searchCustomerBtn" onclick="showSearchCustomerModal()" class="btn btn-secondary">
                             <i class="fas fa-search"></i>Find Customer
                         </button>
                     </div>
-                    
-                    <div>
-                        <button type="button" id="createCustomerBtn" onclick="showCreateCustomerModal()" class="btn w-full btn-accent">
-                            <i class="fas fa-user-plus"></i>Create Customer
-                        </button>
-                    </div>
+                </div>
+                 <div id="customerStatus" class="text-sm -mt-4 mb-4 h-5"></div>
+                
+                <div class="border-t border-slate-200 pt-4 mt-6 text-sm text-center space-y-2">
+                     <p>
+                        <a href="#" onclick="event.preventDefault(); showCreateCustomerModal();" class="text-indigo-600 hover:underline font-medium">Want to create a new customer?</a>
+                     </p>
+                     <p>
+                        <a href="#" onclick="event.preventDefault(); showBankAccountModal();" class="text-indigo-600 hover:underline font-medium">Missing bank details? Click here to add.</a>
+                     </p>
+                     <p>
+                        <a href="#" onclick="event.preventDefault(); showEditCustomerModal();" class="text-indigo-600 hover:underline font-medium">Missing or incorrect customer details?</a>
+                     </p>
                 </div>
 
-                <div id="customerDetailsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+
+                <div id="customerDetailsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 border-t border-slate-200 pt-6 mt-6">
+                     <div>
+                        <label for="customerNumberForApi" class="label">Customer No.</label>
+                        <input type="text" id="customerNumberForApi" required class="input-field" placeholder="Auto-populated" disabled>
+                    </div>
                     <div>
                         <label for="customerFirstName" class="label">First Name</label>
                         <input type="text" id="customerFirstName" class="input-field" required placeholder="Auto-populated" disabled>
@@ -267,14 +275,15 @@
                 </div>
             </div>
 
+            <!-- Other form sections remain the same -->
             <div class="form-section" id="existingPoliciesSection" style="display:none;">
-                <h2 class="flex items-center"><i class="fas fa-history mr-3 text-lg"></i>Existing Policy Information</h2>
+                <h2 class="flex items-center"><i class="fas fa-history mr-3 text-lg text-indigo-500"></i>Existing Policy Information</h2>
                 <div id="existingPoliciesContainer" class="space-y-6"></div>
                 <p id="noPoliciesMessage" class="text-gray-500 text-center py-4 hidden">No existing policies found for this customer.</p>
             </div>
 
             <div class="form-section">
-                <h2 class="flex items-center"><i class="fas fa-file-contract mr-3 text-lg"></i>Pension Policy Details</h2>
+                <h2 class="flex items-center"><i class="fas fa-file-contract mr-3 text-lg text-indigo-500"></i>Pension Policy Details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
                     <div>
                         <label for="policyName" class="label">Policy Name</label>
@@ -301,7 +310,7 @@
 				
 				<div>
 			<label for="policyInstallmentAmount" class="label">Policy Installments Amount</label>
-			 <input type="number" id="policyInstallmentAmount" class="input-field" required min="1" max="50" placeholder="Auto-populated">
+			 <input type="number" id="policyInstallmentAmount" class="input-field" required  placeholder="Auto-populated">
 			</div>
                     
                     <div>
@@ -336,12 +345,11 @@
 					        <option value="SURRENDERED">Surrendered</option>
 					    </select>
 					</div>
-
                 </div>
             </div>
 
             <div class="form-section">
-                <h2 class="flex items-center"><i class="fas fa-hand-holding-usd mr-3 text-lg"></i>Pension & Nominee Details</h2>
+                <h2 class="flex items-center"><i class="fas fa-hand-holding-usd mr-3 text-lg text-indigo-500"></i>Pension & Nominee Details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
                     <div>
                         <label for="benefitAge" class="label">Retirement/Benefit Age <span class="text-red-500">*</span></label>
@@ -370,6 +378,10 @@
                         <label for="nomineeAadhar" class="label">Nominee Aadhar Number</label>
                         <input type="text" id="nomineeAadhar" class="input-field" placeholder="Nominee's Aadhar">
                     </div>
+					<div>
+					<label for="nomineeContactNumber" class="label">Nominee Contact Number</label>
+					 <input type="text" id="nomineeContact" class="input-field" required  max="10" placeholder="Nominee's Contact">
+					 </div>
                     <div>
                         <label for="nomineePan" class="label">Nominee PAN Number</label>
                         <input type="text" id="nomineePan" class="input-field" placeholder="Nominee's PAN">
@@ -381,7 +393,7 @@
                 </div>
 
                 <div class="mt-6">
-                    <h3 class="text-md font-semibold text-gray-800 mb-2 border-b pb-2">Policy Benefits (Riders)</h3>
+                    <h3 class="text-md font-semibold text-slate-800 mb-2 border-b pb-2">Policy Benefits (Riders)</h3>
                     <div id="benefitsContainer" class="space-y-3 mt-3"></div>
                     <button type="button" id="addBenefitBtn" class="mt-3 btn btn-warning">
                         <i class="fas fa-plus"></i> Add Policy Benefit
@@ -417,7 +429,24 @@
         <div class="notification-content">
             <h3 class="text-xl font-bold mb-3 text-indigo-600">Customer Creation Workflow</h3>
             <p class="text-gray-600 mb-6">This is a mock navigation. In a real application, this would redirect to the dedicated "Create New Customer" page.</p>
-            <button onclick="closeCustomerModal()" class="btn btn-accent w-full">
+            <button onclick="closeCustomerModal()" class="btn btn-glow w-full">
+                Close Mock & Continue
+            </button>
+        </div>
+    </div>
+	<div id="createBankAccountModal" class="notification-modal">
+        <div class="notification-content">
+            <h3 class="text-xl font-bold mb-3 text-indigo-600">Bank Account Creation</h3>
+            <p class="text-gray-600 mb-6">This is a mock navigation. In a real application, this would redirect to the dedicated "Create New Bank Account" page for the customer.</p>
+            <button onclick="closeBankAccountModal()" class="btn btn-glow w-full">Close Mock & Continue
+            </button>
+        </div>
+    </div>
+     <div id="editCustomerModal" class="notification-modal">
+        <div class="notification-content">
+            <h3 class="text-xl font-bold mb-3 text-indigo-600">Edit Customer Workflow</h3>
+            <p class="text-gray-600 mb-6">This is a mock navigation. In a real application, this would redirect to a page to edit the currently loaded customer's details.</p>
+            <button onclick="closeEditCustomerModal()" class="btn btn-glow w-full">
                 Close Mock & Continue
             </button>
         </div>
@@ -429,33 +458,18 @@
                 <span><i class="fas fa-search mr-3"></i> Search Customer</span>
                 <button onclick="closeSearchCustomerModal()" class="text-gray-400 hover:text-gray-700 text-3xl leading-none">&times;</button>
             </h3>
-
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                <div>
-                    <label for="searchName" class="label">Name</label>
-                    <input type="text" id="searchName" class="input-field" placeholder="Full or partial name">
-                </div>
-                <div>
-                    <label for="searchEmail" class="label">Email</label>
-                    <input type="email" id="searchEmail" class="input-field" placeholder="Email address">
-                </div>
-                <div>
-                    <label for="searchPhone" class="label">Phone Number</label>
-                    <input type="tel" id="searchPhone" class="input-field" placeholder="Phone number">
-                </div>
-                <div>
-                    <label for="searchCustomerNo" class="label">Customer No</label>
-                    <input type="text" id="searchCustomerNo" class="input-field" placeholder="Customer ID">
-                </div>
+                <div> <label for="searchName" class="label">Name</label> <input type="text" id="searchName" class="input-field" placeholder="Full or partial name"> </div>
+                <div> <label for="searchEmail" class="label">Email</label> <input type="email" id="searchEmail" class="input-field" placeholder="Email address"> </div>
+                <div> <label for="searchPhone" class="label">Phone Number</label> <input type="tel" id="searchPhone" class="input-field" placeholder="Phone number"> </div>
+                <div> <label for="searchCustomerNo" class="label">Customer No</label> <input type="text" id="searchCustomerNo" class="input-field" placeholder="Customer ID"> </div>
             </div>
-            
             <div class="text-center pt-2">
                 <button type="button" id="executeSearchBtn" onclick="searchCustomers()" class="btn btn-primary">
                     <span id="searchText">Execute Search</span>
                     <div id="searchLoadingSpinner" class="loading-spinner hidden ml-2"></div>
                 </button>
             </div>
-
             <div class="mt-6">
                 <h4 class="text-md font-semibold text-gray-800 mb-2 border-b pb-1">Search Results (<span id="resultCount">0</span>)</h4>
                 <div id="searchResultsContainer" class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-inner max-h-64 overflow-y-auto">
@@ -465,16 +479,16 @@
         </div>
     </div>
 
-    <footer class="footer">
-        &copy; <span id="currentYear"></span> Pension Management System. All rights reserved.
+    <!-- Redesigned Footer -->
+    <footer class="bg-slate-800 text-slate-400 text-center py-4 mt-auto border-t border-slate-700">
+        <p>Pension Management Services V1</p>
     </footer>
 
-    <script>
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
 
+    <script>
         const PENSION_SERVICE_BASE_URL = 'http://localhost:9091/PensionServices';
 
-        // Form and element references
+        // DOM Element Declarations
         const form = document.getElementById('pensionPolicyForm');
         const benefitsContainer = document.getElementById('benefitsContainer');
         const addBenefitBtn = document.getElementById('addBenefitBtn');
@@ -494,6 +508,7 @@
         const resultCountSpan = document.getElementById('resultCount');
         const executeSearchBtn = document.getElementById('executeSearchBtn');
         const searchLoadingSpinner = document.getElementById('searchLoadingSpinner');
+        const notificationModal = document.getElementById('notificationModal');
 
         let domainProductsData = [];
         let benefitCount = 0;
@@ -503,11 +518,14 @@
             'Waiver of Premium', 'Inflation Protection', 'Spouse Coverage'
         ];
         
-        // --- START: Core API and Utility Functions ---
-
         function getUserCode() {
+            // For testing, this can be hardcoded. In a real app, it would come from session/local storage after login.
             let userCode = sessionStorage.getItem('userCode');
-            return userCode || 'setDummyUser';
+             if (!userCode) {
+                userCode = 'DEMOUSER01'; // Default user for demo
+                sessionStorage.setItem('userCode', userCode);
+            }
+            return userCode;
         }
         
         async function fetchWithRetry(fn, retries = 3) {
@@ -530,11 +548,6 @@
             return fetchWithRetry(() => fetch(url, { ...options, headers }));
         }
 
-        // --- END: Core API and Utility Functions ---
-
-
-        // --- START: Customer Lookup and Details ---
-        
         function checkCustomerNumber(value) {
             fetchCustomerBtn.disabled = value.trim().length === 0;
             customerStatusP.textContent = '';
@@ -548,7 +561,7 @@
             const customerNumber = customerNumberInputForSearch.value.trim();
             if (!customerNumber) return;
 
-            customerStatusP.innerHTML = '<span class="text-blue-500 text-xs"><i class="fas fa-spinner fa-spin mr-1"></i>Fetching...</span>';
+            customerStatusP.innerHTML = '<span class="text-blue-500"><i class="fas fa-spinner fa-spin mr-1"></i>Fetching...</span>';
             fetchCustomerBtn.disabled = true;
 
             try {
@@ -561,14 +574,14 @@
                 
                 if (apiResult.data && apiResult.data.length > 0) {
                     autoPopulateForm(apiResult.data[0]);
-                    customerStatusP.innerHTML = '<span class="text-green-600 text-xs"><i class="fas fa-check-circle mr-1"></i>Customer details fetched!</span>';
+                    customerStatusP.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Customer details fetched!</span>';
                 } else {
                     clearCustomerFields();
-                    customerStatusP.innerHTML = `<span class="text-red-600 text-xs"><i class="fas fa-times-circle mr-1"></i>${apiResult.errorMessage || 'Customer ID not found.'}</span>`;
+                    customerStatusP.innerHTML = `<span class="text-red-600"><i class="fas fa-times-circle mr-1"></i>${apiResult.errorMessage || 'Customer ID not found.'}</span>`;
                 }
             } catch (error) {
                 console.error("Customer Lookup API Fetch error:", error);
-                customerStatusP.innerHTML = `<span class="text-red-600 text-xs"><i class="fas fa-exclamation-triangle mr-1"></i>${error.message}</span>`;
+                customerStatusP.innerHTML = `<span class="text-red-600"><i class="fas fa-exclamation-triangle mr-1"></i>${error.message}</span>`;
             } finally {
                 fetchCustomerBtn.disabled = false;
             }
@@ -605,11 +618,6 @@
             submitPolicyBtn.disabled = true;
         }
 
-        // --- END: Customer Lookup and Details ---
-
-
-        // --- START: Customer Search Modal ---
-
         function showSearchCustomerModal() {
             searchCustomerModal.classList.add('active');
             searchResultsContainer.innerHTML = '';
@@ -629,7 +637,6 @@
                 customerNo: document.getElementById('searchCustomerNo').value.trim()
             });
 
-            // Remove empty params
             for(let p of queryParams){ if(!p[1]) queryParams.delete(p[0]); }
             
             if (Array.from(queryParams).length === 0) {
@@ -687,14 +694,9 @@
         
         function selectCustomerFromSearch(customerData) {
             autoPopulateForm(customerData);
-            customerStatusP.innerHTML = '<span class="text-green-600 text-xs"><i class="fas fa-check-circle mr-1"></i>Customer selected from search!</span>';
+            customerStatusP.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Customer selected from search!</span>';
             closeSearchCustomerModal();
         }
-
-        // --- END: Customer Search Modal ---
-        
-
-        // --- START: Policy and Form Logic ---
 
         async function getDomainProducts() {
             policyNameSelect.innerHTML = '<option value="">-- Fetching... --</option>';
@@ -793,15 +795,11 @@
             benefitDiv.querySelector('.benefit-select').addEventListener('change', (e) => checkDuplicateBenefit(e.target));
             benefitDiv.querySelector('.remove-benefit-btn').addEventListener('click', (e) => {
                 e.currentTarget.parentElement.remove();
-                checkDuplicateBenefit(); // Re-validate all
+                checkDuplicateBenefit();
             });
         }
         addBenefitBtn.addEventListener('click', addBenefitField);
 
-        // --- END: Policy and Form Logic ---
-
-
-        // --- START: Form Submission ---
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -810,9 +808,11 @@
                  return;
             }
             benefitErrorP.classList.add('hidden');
-
+            
+            const userCode = getUserCode();
             const payload = {
                 activityAction: "CREATE",
+                userCode: userCode,
                 customerProfile: {
                     customerNumber: document.getElementById('customerNumberForApi').value,
                     firstName: document.getElementById('customerFirstName').value,
@@ -872,30 +872,32 @@
                 document.getElementById('loadingSpinner').classList.add('hidden');
             }
         });
-
-        const notificationModal = document.getElementById('notificationModal');
-        
         function showNotification(title, message, isSuccess = true) {
             document.getElementById('notification-title').textContent = title;
             document.getElementById('notification-message').textContent = message;
             document.getElementById('notification-title').className = `text-xl font-bold mb-3 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
             notificationModal.classList.add('active');
         }
-
         document.getElementById('notification-close-btn').addEventListener('click', () => {
             notificationModal.classList.remove('active');
-            // In a real scenario, you might redirect: window.location.href = '...'; 
             resetForm();
         });
-
         function showCreateCustomerModal() { document.getElementById('createCustomerModal').classList.add('active'); }
+		function showBankAccountModal() { document.getElementById('createBankAccountModal').classList.add('active'); }
+        function showEditCustomerModal() { document.getElementById('editCustomerModal').classList.add('active'); }
         function closeCustomerModal() { document.getElementById('createCustomerModal').classList.remove('active'); }
+        function closeBankAccountModal() { document.getElementById('createBankAccountModal').classList.remove('active'); }
+        function closeEditCustomerModal() { document.getElementById('editCustomerModal').classList.remove('active'); }
         
-        // --- END: Modal Controls ---
-
         window.onload = function() {
             addBenefitField();
             getDomainProducts();
+            const userCode = getUserCode();
+            if (userCode) {
+                document.getElementById('userCodeDisplay').textContent = userCode;
+                const userInitial = userCode.charAt(0).toUpperCase();
+                document.querySelector('#user-menu-button img').src = `https://placehold.co/100x100/E2E8F0/475569?text=${userInitial}`;
+            }
         }
     </script>
 </body>

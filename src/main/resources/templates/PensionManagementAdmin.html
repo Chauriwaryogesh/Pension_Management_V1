@@ -301,10 +301,14 @@
             background-color: #3b82f6;
             color: #ffffff;
         }
-        .action-button:hover {
+        .action-button:hover:not(:disabled) {
             background-color: #2563eb;
             transform: translateY(-1px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .action-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
         }
         .action-button.secondary {
             background-color: #6b7280;
@@ -504,6 +508,45 @@
             text-align: right;
             white-space: nowrap;
         }
+
+        /* Bank Details Card */
+        .bank-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            font-size: 0.875rem;
+        }
+        .bank-card-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .bank-card-item .label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 0.1rem;
+        }
+        .bank-card-item .value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .bank-card-item .status-badge {
+             padding: 0.15rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            width: fit-content;
+        }
+        .bank-card-item .status-REJECTED { background-color: #fee2e2; color: #991b1b; }
+        .bank-card-item .status-APPROVED, .bank-card-item .status-ACTIVE { background-color: #dcfce7; color: #166534; }
+
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -597,7 +640,8 @@
                             <button onclick="redirectToCreateCustomerModule()" class="action-button text-sm"><i class="fas fa-user-plus mr-2"></i>Create Customer</button>
                             <button onclick="redirectToVerifyCustomerDetailsModle()" class="action-button text-sm"><i class="fas fa-user-check mr-2"></i>Verify Customer Details</button>
                             <button onclick="redirectToManageWorkitem()" class="action-button text-sm"><i class="fas fa-tasks mr-2"></i>Manage Work Items</button>
-                        </div>
+							<button onclick="redirectToCreateBank()" class="action-button text-sm"><i class="fas fa-university mr-2"></i>Add Bank Details</button>
+                             </div>
 
                         <details class="filter-section border-t pt-4">
                             <summary>
@@ -746,7 +790,8 @@
                                     <option value="CLOSED">CLOSED</option>
                                 </select>
                             </div>
-                            <div class="flex justify-end pt-2">
+                            <div class="flex justify-end pt-2 gap-2">
+                                <button id="view-bank-details-btn" class="action-button secondary"><i class="fas fa-university mr-2"></i> View Bank Details</button>
                                 <button onclick="updatePolicyDetails()" class="action-button"><i class="fas fa-save mr-2"></i> Update Policy</button>
                             </div>
                         </div>
@@ -820,12 +865,23 @@
                     </div>
                 </div>
 
+                <div id="bank-details-section" class="policy-detail-section hidden">
+                    <h3>Bank Account Details</h3>
+                    <div id="bank-details-content" class="space-y-4">
+                        <!-- Bank cards will be rendered here -->
+                    </div>
+                    <p id="no-bank-accounts-message" class="text-center text-gray-500 mt-4 hidden">No bank accounts found for this customer.</p>
+                    <div id="bank-pagination-controls" class="flex justify-between items-center mt-4">
+                        <!-- Pagination will be rendered here -->
+                    </div>
+                </div>
+                
                 <div class="policy-detail-section mb-6">
                     <h3>Key Benefits</h3>
                     <ul class="list-disc list-inside space-y-2 text-gray-700" id="detail-benefits-list"></ul>
                     <button onclick="openAddBenefitModal()" class="action-button mt-4"><i class="fas fa-plus-circle mr-2"></i> Add/Edit Benefits</button>
                 </div>
-
+               
                 <div class="policy-detail-section">
                     <h3>Payment History</h3>
                     <div class="overflow-x-auto">
@@ -921,6 +977,8 @@
     <footer class="main-footer">© 2025 Secure Access Limited. All rights reserved ❤️ Company.</footer>
     
     <script>
+        const BANK_SERVICE_BASE_URL = 'http://localhost:8081/bankService';
+
         const config = { 
             loginUrl: 'login', 
             userCode: sessionStorage.getItem('userCode'), 
@@ -929,226 +987,34 @@
         };
 
         let allPensionPolicies = [
-            {
-                id: 1,
-                policyNumber: "PENSION/001/2025",
-                policyHolder: "John Doe",
-                customerNumber: "CUST12345",
-                startDate: "2025-01-01",
-                policyStatus: "ACTIVE",
-                premiumAmount: 500.00,
-                currency: "INR",
-                paymentFrequency: "Monthly",
-                currentAge: 35,
-                startAge: 18,
-                benefitAge: 60,
-                maturityDate: "2050-01-01",
-                fundValue: 150000.00,
-                fundLastUpdated: "2025-08-20",
-                nominee: "Jane Doe",
-                lastPaymentDate: "2025-07-20",
-                nextPaymentDate: "2025-08-20",
-                benefits: [
-                    "₹ 50,00,000 lump sum at age 60",
-                    "₹ 50,000 per month annuity option post 60",
-                    "100% of fund value or 10 times annual premium, whichever is higher (Death Benefit)",
-                    "Flexible payment options (Monthly, Quarterly, Yearly)"
-                ],
-                paymentHistory: [
-                    { id: 101, date: "2025-01-20", amount: 500.00, status: "Paid" },
-                    { id: 102, date: "2025-02-20", amount: 500.00, status: "Paid" },
-                    { id: 103, date: "2025-03-20", amount: 500.00, status: "Paid" },
-                    { id: 104, date: "2025-04-20", amount: 500.00, status: "Paid" },
-                    { id: 105, date: "2025-05-20", amount: 500.00, status: "Paid" },
-                    { id: 106, date: "2025-06-20", amount: 500.00, status: "Paid" },
-                    { id: 107, date: "2025-07-20", amount: 500.00, status: "Paid" },
-                ]
-            },
-            {
-                id: 2,
-                policyNumber: "PENSION/002/2025",
-                policyHolder: "Alice Smith",
-                customerNumber: "CUST12346",
-                startDate: "2025-03-10",
-                policyStatus: "IN_PROGRESS",
-                premiumAmount: 750.00,
-                currency: "INR",
-                paymentFrequency: "Quarterly",
-                currentAge: 40,
-                startAge: 25,
-                benefitAge: 65,
-                maturityDate: "2050-03-10",
-                fundValue: 50000.00,
-                fundLastUpdated: "2025-08-15",
-                nominee: "Bob Smith",
-                lastPaymentDate: "2025-06-10",
-                nextPaymentDate: "2025-09-10",
-                benefits: [
-                    "₹ 75,00,000 lump sum at age 65",
-                    "₹ 70,000 per month annuity option post 65"
-                ],
-                paymentHistory: [
-                    { id: 201, date: "2025-03-10", amount: 750.00, status: "Paid" },
-                    { id: 202, date: "2025-06-10", amount: 750.00, status: "Paid" },
-                ]
-            },
-            {
-                id: 3,
-                policyNumber: "PENSION/003/2025",
-                policyHolder: "Charlie Brown",
-                customerNumber: "CUST12347",
-                startDate: "2024-11-01",
-                policyStatus: "APPROVED",
-                premiumAmount: 300.00,
-                currency: "INR",
-                paymentFrequency: "Yearly",
-                currentAge: 28,
-                startAge: 20,
-                benefitAge: 55,
-                maturityDate: "2050-11-01",
-                fundValue: 100000.00,
-                fundLastUpdated: "2025-08-01",
-                nominee: "Sally Brown",
-                lastPaymentDate: "2024-11-01",
-                nextPaymentDate: "2025-11-01",
-                benefits: [
-                    "₹ 30,00,000 lump sum at age 55"
-                ],
-                paymentHistory: [
-                    { id: 301, date: "2024-11-01", amount: 300.00, status: "Paid" },
-                ]
-            },
-            {
-                id: 4,
-                policyNumber: "PENSION/004/2025",
-                policyHolder: "Diana Prince",
-                customerNumber: "CUST12348",
-                startDate: "2023-05-15",
-                policyStatus: "REJECTED",
-                premiumAmount: 600.00,
-                currency: "INR",
-                paymentFrequency: "Monthly",
-                currentAge: 50,
-                startAge: 45,
-                benefitAge: 60,
-                maturityDate: "2038-05-15",
-                fundValue: 0.00,
-                fundLastUpdated: "2023-05-15",
-                nominee: "Steve Trevor",
-                lastPaymentDate: "2023-05-15",
-                nextPaymentDate: "2023-06-15",
-                benefits: [],
-                paymentHistory: [
-                    { id: 401, date: "2023-05-15", amount: 600.00, status: "Paid" },
-                ]
-            },
-            {
-                id: 5,
-                policyNumber: "PENSION/005/2025",
-                policyHolder: "Eva Green",
-                customerNumber: "CUST12349",
-                startDate: "2020-01-01",
-                policyStatus: "LAPSED",
-                premiumAmount: 400.00,
-                currency: "INR",
-                paymentFrequency: "Monthly",
-                currentAge: 45,
-                startAge: 30,
-                benefitAge: 60,
-                maturityDate: "2045-01-01",
-                fundValue: 80000.00,
-                fundLastUpdated: "2022-12-31",
-                nominee: "James Bond",
-                lastPaymentDate: "2022-11-01",
-                nextPaymentDate: "2022-12-01",
-                benefits: [
-                    "Reduced paid-up sum at maturity"
-                ],
-                paymentHistory: [
-                    { id: 501, date: "2020-01-01", amount: 400.00, status: "Paid" },
-                    { id: 502, date: "2020-02-01", amount: 400.00, status: "Paid" },
-                    { id: 503, date: "2020-03-01", amount: 400.00, status: "Paid" },
-                    { id: 504, date: "2020-04-01", amount: 400.00, status: "Unpaid" },
-                ]
-            },
-            {
-                id: 6,
-                policyNumber: "PENSION/006/2025",
-                policyHolder: "Frank White",
-                customerNumber: "CUST12350",
-                startDate: "2015-06-01",
-                policyStatus: "MATURED",
-                premiumAmount: 1000.00,
-                currency: "INR",
-                paymentFrequency: "Yearly",
-                currentAge: 62,
-                startAge: 40,
-                benefitAge: 60,
-                maturityDate: "2035-06-01",
-                fundValue: 2500000.00,
-                fundLastUpdated: "2035-06-01",
-                nominee: "Grace White",
-                lastPaymentDate: "2034-06-01",
-                nextPaymentDate: null,
-                benefits: [
-                    "₹ 25,00,000 lump sum received",
-                    "Option for monthly annuity commenced"
-                ],
-                paymentHistory: []
-            },
-           
+            { id: 1, policyNumber: "PENSION/001/2025", policyHolder: "John Doe", customerNumber: "T0000032025", startDate: "2025-01-01", policyStatus: "ACTIVE", premiumAmount: 500.00, currency: "INR", paymentFrequency: "Monthly", currentAge: 35, startAge: 18, benefitAge: 60, maturityDate: "2050-01-01", fundValue: 150000.00, fundLastUpdated: "2025-08-20", nominee: "Jane Doe", lastPaymentDate: "2025-07-20", nextPaymentDate: "2025-08-20", benefits: [ "₹ 50,00,000 lump sum at age 60", "₹ 50,000 per month annuity option post 60", "100% of fund value or 10 times annual premium, whichever is higher (Death Benefit)", "Flexible payment options (Monthly, Quarterly, Yearly)" ], paymentHistory: [ { id: 101, date: "2025-01-20", amount: 500.00, status: "Paid" }, { id: 102, date: "2025-02-20", amount: 500.00, status: "Paid" }, { id: 103, date: "2025-03-20", amount: 500.00, status: "Paid" }, { id: 104, date: "2025-04-20", amount: 500.00, status: "Paid" }, { id: 105, date: "2025-05-20", amount: 500.00, status: "Paid" }, { id: 106, date: "2025-06-20", amount: 500.00, status: "Paid" }, { id: 107, date: "2025-07-20", amount: 500.00, status: "Paid" }, ] },
+            { id: 2, policyNumber: "PENSION/002/2025", policyHolder: "Alice Smith", customerNumber: "CUST12346", startDate: "2025-03-10", policyStatus: "IN_PROGRESS", premiumAmount: 750.00, currency: "INR", paymentFrequency: "Quarterly", currentAge: 40, startAge: 25, benefitAge: 65, maturityDate: "2050-03-10", fundValue: 50000.00, fundLastUpdated: "2025-08-15", nominee: "Bob Smith", lastPaymentDate: "2025-06-10", nextPaymentDate: "2025-09-10", benefits: [ "₹ 75,00,000 lump sum at age 65", "₹ 70,000 per month annuity option post 65" ], paymentHistory: [ { id: 201, date: "2025-03-10", amount: 750.00, status: "Paid" }, { id: 202, date: "2025-06-10", amount: 750.00, status: "Paid" }, ] },
+            { id: 3, policyNumber: "PENSION/003/2025", policyHolder: "Charlie Brown", customerNumber: "CUST12347", startDate: "2024-11-01", policyStatus: "APPROVED", premiumAmount: 300.00, currency: "INR", paymentFrequency: "Yearly", currentAge: 28, startAge: 20, benefitAge: 55, maturityDate: "2050-11-01", fundValue: 100000.00, fundLastUpdated: "2025-08-01", nominee: "Sally Brown", lastPaymentDate: "2024-11-01", nextPaymentDate: "2025-11-01", benefits: [ "₹ 30,00,000 lump sum at age 55" ], paymentHistory: [ { id: 301, date: "2024-11-01", amount: 300.00, status: "Paid" }, ] },
+            { id: 4, policyNumber: "PENSION/004/2025", policyHolder: "Diana Prince", customerNumber: "CUST12348", startDate: "2023-05-15", policyStatus: "REJECTED", premiumAmount: 600.00, currency: "INR", paymentFrequency: "Monthly", currentAge: 50, startAge: 45, benefitAge: 60, maturityDate: "2038-05-15", fundValue: 0.00, fundLastUpdated: "2023-05-15", nominee: "Steve Trevor", lastPaymentDate: "2023-05-15", nextPaymentDate: "2023-06-15", benefits: [], paymentHistory: [ { id: 401, date: "2023-05-15", amount: 600.00, status: "Paid" }, ] },
+            { id: 5, policyNumber: "PENSION/005/2025", policyHolder: "Eva Green", customerNumber: "CUST12349", startDate: "2020-01-01", policyStatus: "LAPSED", premiumAmount: 400.00, currency: "INR", paymentFrequency: "Monthly", currentAge: 45, startAge: 30, benefitAge: 60, maturityDate: "2045-01-01", fundValue: 80000.00, fundLastUpdated: "2022-12-31", nominee: "James Bond", lastPaymentDate: "2022-11-01", nextPaymentDate: "2022-12-01", benefits: [ "Reduced paid-up sum at maturity" ], paymentHistory: [ { id: 501, date: "2020-01-01", amount: 400.00, status: "Paid" }, { id: 502, date: "2020-02-01", amount: 400.00, status: "Paid" }, { id: 503, date: "2020-03-01", amount: 400.00, status: "Paid" }, { id: 504, date: "2020-04-01", amount: 400.00, status: "Unpaid" }, ] },
+            { id: 6, policyNumber: "PENSION/006/2025", policyHolder: "Frank White", customerNumber: "CUST12350", startDate: "2015-06-01", policyStatus: "MATURED", premiumAmount: 1000.00, currency: "INR", paymentFrequency: "Yearly", currentAge: 62, startAge: 40, benefitAge: 60, maturityDate: "2035-06-01", fundValue: 2500000.00, fundLastUpdated: "2035-06-01", nominee: "Grace White", lastPaymentDate: "2034-06-01", nextPaymentDate: null, benefits: [ "₹ 25,00,000 lump sum received", "Option for monthly annuity commenced" ], paymentHistory: [] },
         ];
 
         let mockUpcomingRequests = [
-            {
-                id: 1,
-                policyNumber: "PENSION/002/2025",
-                requestType: "Address Change",
-                requestDate: "2025-08-18",
-                status: "IN_PROGRESS",
-                details: "Customer requested update of residential address."
-            },
-            {
-                id: 2,
-                policyNumber: "PENSION/001/2025",
-                requestType: "Payment Frequency Change",
-                requestDate: "2025-08-19",
-                status: "PENDING",
-                details: "Customer wants to change payment frequency from Monthly to Quarterly."
-            },
-            {
-                id: 3,
-                policyNumber: "PENSION/003/2025",
-                requestType: "Nominee Update",
-                requestDate: "2025-08-17",
-                status: "APPROVED",
-                details: "Updated nominee from Sally Brown to Tom Brown."
-            }
+            { id: 1, policyNumber: "PENSION/002/2025", requestType: "Address Change", requestDate: "2025-08-18", status: "IN_PROGRESS", details: "Customer requested update of residential address." },
+            { id: 2, policyNumber: "PENSION/001/2025", requestType: "Payment Frequency Change", requestDate: "2025-08-19", status: "PENDING", details: "Customer wants to change payment frequency from Monthly to Quarterly." },
+            { id: 3, policyNumber: "PENSION/003/2025", requestType: "Nominee Update", requestDate: "2025-08-17", status: "APPROVED", details: "Updated nominee from Sally Brown to Tom Brown." }
         ];
 
-        let currentActivePolicy = null; // Policy currently being viewed/edited in the full-screen modal
-        let currentFilterStatus = ''; // For policy list tabs
+        let currentActivePolicy = null;
+        let currentFilterStatus = '';
         let currentSearchTerm = '';
         let currentAdvancedFilters = {};
         let policyIdToDelete = null;
-        let currentViewMode = 'grid'; // 'grid' or 'list'
+        let currentViewMode = 'grid';
+        let currentCustomerForBank = null;
 
-		function redirectToManageWorkitem() {
-		               // const PaneluserCode = getuserCode();          
-		                window.location.href = "AdminPanel";               
-		            }
-					function redirectToVerifyCustomerDetailsModle() {
-					                //const PaneluserCode = getuserCode();          
-					                window.location.href = "AdminPanel";               
-					            }
-								function redirectToCreateCustomerModule() {
-								              //  const PaneluserCode = getuserCode();          
-								                window.location.href = "AdminPanel";               
-								            }
-											function redirectCreatePolicyModule() {
-											              //  const PaneluserCode = getuserCode();          
-											                window.location.href = "CreatePensionPolicy";               
-											            }
+		function redirectToManageWorkitem() { window.location.href = "AdminPanel"; }
+		function redirectToVerifyCustomerDetailsModle() { window.location.href = "AdminPanel"; }
+		function redirectToCreateCustomerModule() { window.location.href = "AdminPanel"; }
+		function redirectCreatePolicyModule() { window.location.href = "CreatePensionPolicy"; }
+        function redirectToCreateBank() { window.location.href = "CreateBankAccount.html"; }
+
         const modals = {
             'profile-modal': document.getElementById('profile-modal'),
             'policyDetailAdminModal': document.getElementById('policyDetailAdminModal'),
@@ -1166,39 +1032,22 @@
             if (modals['notificationModal'] && notificationTitle && notificationMessage && notificationCloseBtn) {
                 notificationTitle.textContent = title;
                 notificationMessage.textContent = message;
-
                 const modalBox = modals['notificationModal'].querySelector('.modal-box');
                 notificationTitle.classList.remove('text-red-600', 'text-green-600', 'text-blue-600');
-                modalBox.style.border = '';
-                modalBox.style.backgroundColor = '';
-                notificationCloseBtn.classList.remove('bg-red-500', 'hover:bg-red-600', 'bg-blue-500', 'hover:bg-blue-600');
-
                 if (type === 'error') {
                     notificationTitle.classList.add('text-red-600');
-                    modalBox.style.border = '2px solid #ef4444';
-                    modalBox.style.backgroundColor = '#fef2f2';
-                    notificationCloseBtn.classList.add('bg-red-500', 'hover:bg-red-600');
                 } else if (type === 'success') {
                     notificationTitle.classList.add('text-green-600');
-                    notificationCloseBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
-                } else { // info
+                } else { 
                     notificationTitle.classList.add('text-blue-600');
-                    notificationCloseBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
                 }
-
                 openModal('notificationModal');
-
-                const handleClose = () => {
-                    closeModal('notificationModal');
-                    notificationCloseBtn.removeEventListener('click', handleClose);
-                };
-                notificationCloseBtn.addEventListener('click', handleClose);
-
+                const handleClose = () => closeModal('notificationModal');
+                notificationCloseBtn.addEventListener('click', handleClose, { once: true });
                 if (type !== 'error' && duration > 0) {
                     setTimeout(handleClose, duration);
                 }
             } else {
-                console.warn("Notification modal elements not found, falling back to basic alert.");
                 alert(`${title}: ${message}`);
             }
         }
@@ -1206,16 +1055,13 @@
         function switchView(viewName) {
             const pensionView = document.getElementById('pension-management-view');
             const processedView = document.getElementById('processed-requests-view');
-            const sidebarLinks = document.querySelectorAll('.sidebar-link');
-            
-            sidebarLinks.forEach(link => link.classList.remove('active'));
-
+            document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
             if (viewName === 'processed') {
                 pensionView.classList.add('hidden');
                 processedView.classList.remove('hidden');
                 renderProcessedRequests();
                 document.querySelector('.sidebar-link[onclick*="switchView(\'processed\')"]').classList.add('active');
-            } else { // default to pension view
+            } else {
                 pensionView.classList.remove('hidden');
                 processedView.classList.add('hidden');
                 document.querySelector('.sidebar-link[onclick*="switchView(\'pension\')"]').classList.add('active');
@@ -1235,25 +1081,21 @@
                 policyHealthCheck: 'PensionManagement.html',
                 logout: 'login.html'
             };
-
             const targetFileName = pageUrls[page];
             if (!targetFileName) {
                 showNotification(`Navigation to "${page}" is not configured.`, 'error', 'Navigation Error');
                 return;
             }
-
             if (page === 'logout') {
                 sessionStorage.clear();
                 window.location.href = config.loginUrl;
                 return;
             }
-            
             window.location.href = targetFileName;
         }
 
         function initializeUser() {
             config.userCode = sessionStorage.getItem('userCode');
-            
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('customerNo')) {
                 config.customerNo = urlParams.get('customerNo');
@@ -1261,12 +1103,6 @@
             } else {
                 config.customerNo = sessionStorage.getItem('customerNo');
             }
-
-           // if (!config.userCode) {
-             //   sessionStorage.clear();
-               // window.location.href = config.loginUrl;
-             //   return;
-            //}
             document.getElementById('display-user-code').textContent = `User Code: ${config.userCode || 'N/A'}`;
             document.getElementById('display-customer-no').textContent = `Customer No: ${config.customerNo || 'N/A'}`;
         }
@@ -1275,9 +1111,7 @@
             if (modals[modalId]) {
                 modals[modalId].classList.remove('hidden');
                 modals[modalId].classList.add('active');
-                document.body.classList.add('no-scroll');
-            } else {
-                console.warn(`Modal with ID "${modalId}" not found.`);
+                document.body.style.overflow = 'hidden';
             }
         }
 
@@ -1285,53 +1119,31 @@
             if (modals[modalId]) {
                 modals[modalId].classList.add('hidden');
                 modals[modalId].classList.remove('active');
-                document.body.classList.remove('no-scroll');
-            } else {
-                console.warn(`Modal with ID "${modalId}" not found.`);
+                document.body.style.overflow = '';
             }
         }
 
-        // --- Dashboard Policy Counts ---
         function renderPolicyCounts() {
             const container = document.getElementById('policy-count-cards');
             container.innerHTML = '';
-
-            const allCount = allPensionPolicies.length;
-            const activeCount = allPensionPolicies.filter(p => p.policyStatus === 'ACTIVE').length;
-            const inProgressCount = allPensionPolicies.filter(p => p.policyStatus === 'IN_PROGRESS').length;
-            const approvedCount = allPensionPolicies.filter(p => p.policyStatus === 'APPROVED').length;
-            const rejectedCount = allPensionPolicies.filter(p => p.policyStatus === 'REJECTED').length;
-            const lapsedCount = allPensionPolicies.filter(p => p.policyStatus === 'LAPSED').length;
-            const maturedCount = allPensionPolicies.filter(p => p.policyStatus === 'MATURED').length;
-            const closedCount = allPensionPolicies.filter(p => p.policyStatus === 'CLOSED').length;
-
-
             const counts = [
-                { label: 'All Policies', count: allCount, icon: 'fa-solid fa-users', color: 'bg-blue-500' },
-                { label: 'Active', count: activeCount, icon: 'fa-solid fa-check-circle', color: 'bg-green-500' },
-                { label: 'In Progress', count: inProgressCount, icon: 'fa-solid fa-hourglass-half', color: 'bg-yellow-500' },
-                { label: 'Approved', count: approvedCount, icon: 'fa-solid fa-thumbs-up', color: 'bg-indigo-500' },
-                { label: 'Rejected', count: rejectedCount, icon: 'fa-solid fa-times-circle', color: 'bg-red-500' },
-                { label: 'Lapsed', count: lapsedCount, icon: 'fa-solid fa-ban', color: 'bg-orange-500' },
-                { label: 'Matured', count: maturedCount, icon: 'fa-solid fa-gift', color: 'bg-purple-500' },
-                { label: 'Closed', count: closedCount, icon: 'fa-solid fa-folder-closed', color: 'bg-gray-500' },
+                { label: 'All Policies', count: allPensionPolicies.length, icon: 'fa-solid fa-users', color: 'bg-blue-500' },
+                { label: 'Active', count: allPensionPolicies.filter(p => p.policyStatus === 'ACTIVE').length, icon: 'fa-solid fa-check-circle', color: 'bg-green-500' },
+                { label: 'In Progress', count: allPensionPolicies.filter(p => p.policyStatus === 'IN_PROGRESS').length, icon: 'fa-solid fa-hourglass-half', color: 'bg-yellow-500' },
+                { label: 'Approved', count: allPensionPolicies.filter(p => p.policyStatus === 'APPROVED').length, icon: 'fa-solid fa-thumbs-up', color: 'bg-indigo-500' },
+                { label: 'Rejected', count: allPensionPolicies.filter(p => p.policyStatus === 'REJECTED').length, icon: 'fa-solid fa-times-circle', color: 'bg-red-500' },
+                { label: 'Lapsed', count: allPensionPolicies.filter(p => p.policyStatus === 'LAPSED').length, icon: 'fa-solid fa-ban', color: 'bg-orange-500' },
+                { label: 'Matured', count: allPensionPolicies.filter(p => p.policyStatus === 'MATURED').length, icon: 'fa-solid fa-gift', color: 'bg-purple-500' },
+                { label: 'Closed', count: allPensionPolicies.filter(p => p.policyStatus === 'CLOSED').length, icon: 'fa-solid fa-folder-closed', color: 'bg-gray-500' },
             ];
-
             counts.forEach(item => {
                 const card = document.createElement('div');
                 card.className = `${item.color} text-white p-3 rounded-lg shadow-md flex items-center justify-between transition-transform transform hover:scale-105`;
-                card.innerHTML = `
-                    <div>
-                        <div class="text-2xl font-bold">${item.count}</div>
-                        <div class="text-xs">${item.label}</div>
-                    </div>
-                    <i class="${item.icon} text-3xl opacity-75"></i>
-                `;
+                card.innerHTML = `<div><div class="text-2xl font-bold">${item.count}</div><div class="text-xs">${item.label}</div></div><i class="${item.icon} text-3xl opacity-75"></i>`;
                 container.appendChild(card);
             });
         }
 
-        // --- Policy List Rendering and Filtering ---
         function applyCurrentFilters() {
              if (currentViewMode === 'grid') {
                 renderPolicyListAsGrid(currentFilterStatus, currentSearchTerm, currentAdvancedFilters);
@@ -1342,13 +1154,9 @@
         
         function getFilteredPolicies(statusFilter, searchTerm, advancedFilters) {
              let filteredPolicies = [...allPensionPolicies];
-
-            // Apply tab filter first
             if (statusFilter) {
                 filteredPolicies = filteredPolicies.filter(policy => policy.policyStatus === statusFilter);
             }
-
-            // Apply search term
             if (searchTerm) {
                 const lowerCaseSearchTerm = searchTerm.toLowerCase();
                 filteredPolicies = filteredPolicies.filter(policy =>
@@ -1357,20 +1165,10 @@
                     policy.customerNumber.toLowerCase().includes(lowerCaseSearchTerm)
                 );
             }
-
-            // Apply advanced filters
-            if (advancedFilters.status && advancedFilters.status !== '') {
-                filteredPolicies = filteredPolicies.filter(policy => policy.policyStatus === advancedFilters.status);
-            }
-            if (advancedFilters.paymentFrequency && advancedFilters.paymentFrequency !== '') {
-                filteredPolicies = filteredPolicies.filter(policy => policy.paymentFrequency === advancedFilters.paymentFrequency);
-            }
-            if (advancedFilters.startAge) {
-                filteredPolicies = filteredPolicies.filter(policy => policy.startAge >= parseInt(advancedFilters.startAge));
-            }
-            if (advancedFilters.benefitAge) {
-                filteredPolicies = filteredPolicies.filter(policy => policy.benefitAge >= parseInt(advancedFilters.benefitAge));
-            }
+            if (advancedFilters.status) filteredPolicies = filteredPolicies.filter(p => p.policyStatus === advancedFilters.status);
+            if (advancedFilters.paymentFrequency) filteredPolicies = filteredPolicies.filter(p => p.paymentFrequency === advancedFilters.paymentFrequency);
+            if (advancedFilters.startAge) filteredPolicies = filteredPolicies.filter(p => p.startAge >= parseInt(advancedFilters.startAge));
+            if (advancedFilters.benefitAge) filteredPolicies = filteredPolicies.filter(p => p.benefitAge >= parseInt(advancedFilters.benefitAge));
             return filteredPolicies;
         }
 
@@ -1378,26 +1176,16 @@
             const container = document.getElementById('policy-list-container');
             const noPoliciesMessage = document.getElementById('no-policies-message');
             container.innerHTML = '';
-
             const filteredPolicies = getFilteredPolicies(statusFilter, searchTerm, advancedFilters);
-
-            if (filteredPolicies.length === 0) {
-                noPoliciesMessage.classList.remove('hidden');
-                return;
-            } else {
-                noPoliciesMessage.classList.add('hidden');
-            }
-
+            noPoliciesMessage.classList.toggle('hidden', filteredPolicies.length > 0);
+            if (filteredPolicies.length === 0) return;
             const gridContainer = document.createElement('div');
             gridContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-
             filteredPolicies.forEach(policy => {
                 const card = document.createElement('div');
                 card.className = 'policy-card cursor-pointer';
                 card.onclick = () => openPolicyDetailModal(policy.id);
-
                 const statusClass = `status-${policy.policyStatus}`;
-
                 card.innerHTML = `
                     <h4 title="${policy.policyHolder}">${policy.policyHolder}</h4>
                     <p><strong>Policy No:</strong> ${policy.policyNumber}</p>
@@ -1405,14 +1193,9 @@
                     <p><strong>Status:</strong> <span class="status-badge ${statusClass}">${policy.policyStatus.replace('_', ' ')}</span></p>
                     <p class="text-xs text-gray-500">Starts: ${policy.startDate} | Benefit Age: ${policy.benefitAge}</p>
                     <div class="flex justify-end mt-2 gap-2">
-                        <button class="action-button px-3 py-1 text-sm" onclick="event.stopPropagation(); openPolicyDetailModal(${policy.id})">
-                            <i class="fas fa-eye mr-1"></i> View
-                        </button>
-                        <button class="action-button red px-3 py-1 text-sm" onclick="openDeleteConfirmation(${policy.id}, event)">
-                            <i class="fas fa-trash-alt mr-1"></i> Delete
-                        </button>
-                    </div>
-                `;
+                        <button class="action-button px-3 py-1 text-sm" onclick="event.stopPropagation(); openPolicyDetailModal(${policy.id})"><i class="fas fa-eye mr-1"></i> View</button>
+                        <button class="action-button red px-3 py-1 text-sm" onclick="openDeleteConfirmation(${policy.id}, event)"><i class="fas fa-trash-alt mr-1"></i> Delete</button>
+                    </div>`;
                 gridContainer.appendChild(card);
             });
             container.appendChild(gridContainer);
@@ -1422,31 +1205,12 @@
             const container = document.getElementById('policy-list-container');
             const noPoliciesMessage = document.getElementById('no-policies-message');
             container.innerHTML = '';
-
             const filteredPolicies = getFilteredPolicies(statusFilter, searchTerm, advancedFilters);
-
-            if (filteredPolicies.length === 0) {
-                noPoliciesMessage.classList.remove('hidden');
-                return;
-            } else {
-                noPoliciesMessage.classList.add('hidden');
-            }
-
+            noPoliciesMessage.classList.toggle('hidden', filteredPolicies.length > 0);
+            if (filteredPolicies.length === 0) return;
             const table = document.createElement('table');
             table.className = 'policy-list-table';
-            table.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Policy Holder</th>
-                        <th>Policy No</th>
-                        <th>Status</th>
-                        <th>Maturity Date</th>
-                        <th class="actions-cell">Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            `;
-
+            table.innerHTML = `<thead><tr><th>Policy Holder</th><th>Policy No</th><th>Status</th><th>Maturity Date</th><th class="actions-cell">Actions</th></tr></thead><tbody></tbody>`;
             const tbody = table.querySelector('tbody');
             filteredPolicies.forEach(policy => {
                 const row = document.createElement('tr');
@@ -1456,32 +1220,19 @@
                     <td>${policy.policyNumber}</td>
                     <td><span class="status-badge ${statusClass}">${policy.policyStatus.replace('_', ' ')}</span></td>
                     <td>${policy.maturityDate}</td>
-                    <td class="actions-cell">
-                        <div class="flex justify-end gap-2">
-                            <button class="action-button px-3 py-1 text-sm" onclick="event.stopPropagation(); openPolicyDetailModal(${policy.id})">
-                                <i class="fas fa-eye mr-1"></i> View
-                            </button>
-                            <button class="action-button red px-3 py-1 text-sm" onclick="openDeleteConfirmation(${policy.id}, event)">
-                                <i class="fas fa-trash-alt mr-1"></i> Delete
-                            </button>
-                        </div>
-                    </td>
-                `;
+                    <td class="actions-cell"><div class="flex justify-end gap-2">
+                        <button class="action-button px-3 py-1 text-sm" onclick="openPolicyDetailModal(${policy.id})"><i class="fas fa-eye mr-1"></i> View</button>
+                        <button class="action-button red px-3 py-1 text-sm" onclick="openDeleteConfirmation(${policy.id}, event)"><i class="fas fa-trash-alt mr-1"></i> Delete</button>
+                    </div></td>`;
                 tbody.appendChild(row);
             });
             container.appendChild(table);
         }
 
-        // --- Search and Filter Event Listeners ---
         document.getElementById('apply-search-btn').addEventListener('click', () => {
             currentSearchTerm = document.getElementById('policy-search-input').value.trim();
-            // Clear advanced filters when using main search
-            document.getElementById('filter-status').value = '';
-            document.getElementById('filter-payment-frequency').value = '';
-            document.getElementById('filter-start-age').value = '';
-            document.getElementById('filter-benefit-age').value = '';
+            document.querySelectorAll('.filter-section input, .filter-section select').forEach(el => el.value = '');
             currentAdvancedFilters = {};
-            // Also deactivate all tab buttons and activate 'All'
             document.querySelectorAll('.tab-button-group .tab-button').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.tab-button-group .tab-button[data-status-filter=""]').classList.add('active');
             currentFilterStatus = '';
@@ -1501,34 +1252,23 @@
                 startAge: document.getElementById('filter-start-age').value,
                 benefitAge: document.getElementById('filter-benefit-age').value,
             };
-            // Clear main search when using advanced filters
             document.getElementById('policy-search-input').value = '';
             currentSearchTerm = '';
-            // Also deactivate all tab buttons and activate the one corresponding to the advanced filter status, or 'All'
             document.querySelectorAll('.tab-button-group .tab-button').forEach(btn => btn.classList.remove('active'));
-            const targetTab = document.querySelector(`.tab-button-group .tab-button[data-status-filter="${currentAdvancedFilters.status}"]`);
-            if (targetTab) {
-                targetTab.classList.add('active');
-                currentFilterStatus = currentAdvancedFilters.status;
-            } else {
-                document.querySelector('.tab-button-group .tab-button[data-status-filter=""]').classList.add('active');
-                currentFilterStatus = '';
-            }
+            const targetTab = document.querySelector(`.tab-button-group .tab-button[data-status-filter="${currentAdvancedFilters.status}"]`) || document.querySelector('.tab-button-group .tab-button[data-status-filter=""]');
+            targetTab.classList.add('active');
+            currentFilterStatus = currentAdvancedFilters.status || '';
             applyCurrentFilters();
-            document.querySelector('.filter-section').removeAttribute('open'); // Close filter section
+            document.querySelector('.filter-section').removeAttribute('open');
         });
 
         document.getElementById('clear-filters-btn').addEventListener('click', () => {
-            document.getElementById('filter-status').value = '';
-            document.getElementById('filter-payment-frequency').value = '';
-            document.getElementById('filter-start-age').value = '';
-            document.getElementById('filter-benefit-age').value = '';
+            document.querySelectorAll('.filter-section input, .filter-section select').forEach(el => el.value = '');
             currentAdvancedFilters = {};
             applyCurrentFilters();
-            document.querySelector('.filter-section').removeAttribute('open'); // Close filter section
+            document.querySelector('.filter-section').removeAttribute('open');
         });
 
-        // --- Tab Functionality ---
         document.querySelectorAll('.tab-button-group .tab-button').forEach(button => {
             button.addEventListener('click', () => {
                 document.querySelectorAll('.tab-button-group .tab-button').forEach(btn => btn.classList.remove('active'));
@@ -1538,49 +1278,44 @@
             });
         });
 
-        // --- Policy Detail Modal Functions ---
         function openPolicyDetailModal(policyId) {
             currentActivePolicy = allPensionPolicies.find(p => p.id === policyId);
             if (!currentActivePolicy) {
                 showNotification('Policy not found.', 'error', 'Error');
                 return;
             }
+            currentCustomerForBank = currentActivePolicy.customerNumber;
+            document.getElementById('bank-details-section').classList.add('hidden');
+            document.getElementById('bank-details-content').innerHTML = '';
+            document.getElementById('bank-pagination-controls').innerHTML = '';
             populatePolicyDetailModal(currentActivePolicy);
             openModal('policyDetailAdminModal');
         }
         
         function openDeleteConfirmation(policyId, event) {
-            event.stopPropagation(); // Prevent card click from firing
+            event.stopPropagation();
             policyIdToDelete = policyId;
             openModal('deleteConfirmationModal');
         }
         
         function confirmDeletePolicy() {
             if (policyIdToDelete === null) return;
-            
             allPensionPolicies = allPensionPolicies.filter(p => p.id !== policyIdToDelete);
-            
             closeModal('deleteConfirmationModal');
             showNotification('Policy deleted successfully!', 'success');
-            
-            renderPolicyCounts(); // Update counts
-            applyCurrentFilters(); // Re-render the list
-
-            policyIdToDelete = null; // Reset
+            renderPolicyCounts();
+            applyCurrentFilters();
+            policyIdToDelete = null;
         }
 
         function populatePolicyDetailModal(policy) {
             document.getElementById('modal-policy-number').textContent = policy.policyNumber;
-            
-            // Policy Overview
             document.getElementById('detail-policy-number').value = policy.policyNumber;
             document.getElementById('detail-policy-holder').value = policy.policyHolder;
             document.getElementById('detail-customer-number').value = policy.customerNumber;
             document.getElementById('detail-start-date').value = policy.startDate;
             document.getElementById('detail-maturity-date').value = policy.maturityDate;
             document.getElementById('detail-policy-status').value = policy.policyStatus;
-
-            // Contribution Details
             document.getElementById('detail-premium-amount').value = policy.premiumAmount;
             document.getElementById('detail-payment-frequency').value = policy.paymentFrequency;
             document.getElementById('detail-current-age').value = policy.currentAge;
@@ -1588,14 +1323,9 @@
             document.getElementById('detail-benefit-age').value = policy.benefitAge;
             document.getElementById('detail-last-payment-date').value = policy.lastPaymentDate;
             document.getElementById('detail-next-payment-date').value = policy.nextPaymentDate;
-
-            // Fund Performance
             document.getElementById('detail-fund-value').value = policy.fundValue;
             document.getElementById('detail-fund-last-updated').textContent = policy.fundLastUpdated;
-
-            // Nominee Details
             document.getElementById('detail-nominee-name').value = policy.nominee;
-
             renderDetailBenefitsList();
             renderDetailPaymentHistory();
         }
@@ -1611,7 +1341,7 @@
             renderPolicyCounts();
             applyCurrentFilters();
         }
-
+        
         function updateContributionDetails() {
             if (!currentActivePolicy) return;
             currentActivePolicy.premiumAmount = parseFloat(document.getElementById('detail-premium-amount').value);
@@ -1624,7 +1354,7 @@
             showNotification('Contribution details updated successfully!', 'success');
             applyCurrentFilters();
         }
-
+        
         function updateFundDetails() {
             if (!currentActivePolicy) return;
             currentActivePolicy.fundValue = parseFloat(document.getElementById('detail-fund-value').value);
@@ -1669,7 +1399,7 @@
             document.getElementById('new-benefit-input').value = '';
             openModal('edit-benefits-modal');
         }
-
+        
         function addBenefitToList() {
             const newBenefitText = document.getElementById('new-benefit-input').value.trim();
             if (newBenefitText && currentActivePolicy) {
@@ -1681,7 +1411,7 @@
                 showNotification('Please enter a benefit description.', 'error', 'Input Required');
             }
         }
-
+        
         function removeBenefitFromModal(index) {
             if (currentActivePolicy && currentActivePolicy.benefits) {
                 currentActivePolicy.benefits.splice(index, 1);
@@ -1689,45 +1419,106 @@
                 showNotification('Benefit removed. Click "Save Changes" to finalize.', 'info', '', 1500);
             }
         }
-
+        
         function saveBenefits() {
             renderDetailBenefitsList();
             closeModal('edit-benefits-modal');
             showNotification('Policy benefits updated successfully!', 'success');
         }
 
+        // --- BANK DETAILS ---
+        async function fetchBankDetails(customerNo, page = 0, size = 2) {
+            if (!customerNo) {
+                showNotification('Customer number is missing.', 'error');
+                return;
+            }
+            const container = document.getElementById('bank-details-content');
+            container.innerHTML = `<div class="flex items-center justify-center p-4"><i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i><span class="ml-2">Loading bank details...</span></div>`;
+            document.getElementById('bank-details-section').classList.remove('hidden');
+
+            try {
+				customerNo='T0000032025';
+                const response = await fetch(`${BANK_SERVICE_BASE_URL}/bank-details?customerNo=${customerNo}&page=${page}&size=${size}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const result = await response.json();
+
+                if (result.status === "Success" && result.data) {
+                    renderBankDetails(result.data.content);
+                    renderPaginationControls(result.data);
+                } else {
+                     throw new Error(result.errorMessage || 'Failed to fetch bank details.');
+                }
+            } catch (error) {
+                console.error("Fetch Bank Details API error:", error);
+                container.innerHTML = `<p class="text-center text-red-500 p-4">Failed to load bank details: ${error.message}</p>`;
+                document.getElementById('no-bank-accounts-message').classList.add('hidden');
+                document.getElementById('bank-pagination-controls').innerHTML = '';
+            }
+        }
+
+        function renderBankDetails(accounts) {
+            const container = document.getElementById('bank-details-content');
+            const noAccountsMessage = document.getElementById('no-bank-accounts-message');
+            container.innerHTML = '';
+
+            noAccountsMessage.classList.toggle('hidden', accounts.length > 0);
+            if(accounts.length === 0) return;
+
+            accounts.forEach(acc => {
+                const card = document.createElement('div');
+                card.className = 'bank-card';
+                card.innerHTML = `
+                    <div class="bank-card-item"><span class="label">Bank Name</span><span class="value">${acc.bankName || 'N/A'}</span></div>
+                    <div class="bank-card-item"><span class="label">Account Number</span><span class="value">${acc.accountNumber || 'N/A'}</span></div>
+                    <div class="bank-card-item"><span class="label">IFSC Code</span><span class="value">${acc.ifscCode || 'N/A'}</span></div>
+                    <div class="bank-card-item"><span class="label">Account Type</span><span class="value">${acc.accountType || 'N/A'}</span></div>
+                    <div class="bank-card-item"><span class="label">Default Account</span><span class="value">${acc.isDefaultAccount ? 'Yes' : 'No'}</span></div>
+                    <div class="bank-card-item"><span class="label">Status</span><span class="value"><span class="status-badge status-${acc.status}">${acc.status || 'N/A'}</span></span></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderPaginationControls(pageData) {
+            const container = document.getElementById('bank-pagination-controls');
+            container.innerHTML = '';
+
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = `<i class="fas fa-arrow-left mr-2"></i> Previous`;
+            prevButton.className = 'action-button secondary';
+            prevButton.disabled = pageData.first;
+            prevButton.onclick = () => fetchBankDetails(currentCustomerForBank, pageData.number - 1, 2);
+            
+            const pageInfo = document.createElement('span');
+            pageInfo.className = 'text-sm font-medium text-gray-700';
+            pageInfo.textContent = `Page ${pageData.number + 1} of ${pageData.totalPages}`;
+
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = `Next <i class="fas fa-arrow-right ml-2"></i>`;
+            nextButton.className = 'action-button secondary';
+            nextButton.disabled = pageData.last;
+            nextButton.onclick = () => fetchBankDetails(currentCustomerForBank, pageData.number + 1, 2);
+
+            container.appendChild(prevButton);
+            container.appendChild(pageInfo);
+            container.appendChild(nextButton);
+        }
+
+        // --- Other Functions ---
         function renderDetailPaymentHistory() {
             const paymentHistoryTableBody = document.getElementById('detail-payment-history-table-body');
             const noPaymentHistoryMessage = document.getElementById('detail-no-payment-history');
             paymentHistoryTableBody.innerHTML = '';
-
             if (!currentActivePolicy || !currentActivePolicy.paymentHistory || currentActivePolicy.paymentHistory.length === 0) {
-                noPaymentHistoryMessage.classList.remove('hidden');
-                return;
-            } else {
-                noPaymentHistoryMessage.classList.add('hidden');
+                noPaymentHistoryMessage.classList.remove('hidden'); return;
             }
-
-            const sortedHistory = [...currentActivePolicy.paymentHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
-            sortedHistory.forEach(payment => {
+            noPaymentHistoryMessage.classList.add('hidden');
+            [...currentActivePolicy.paymentHistory].sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(p => {
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-50';
-                row.innerHTML = `
-                    <td class="py-2 px-4 border-b">${payment.date}</td>
-                    <td class="py-2 px-4 border-b">${currentActivePolicy.currency} ${payment.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                    <td class="py-2 px-4 border-b">
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold 
-                            ${payment.status === 'Paid' ? 'bg-green-100 text-green-700' : 
-                               payment.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">
-                            ${payment.status}
-                        </span>
-                    </td>
-                    <td class="py-2 px-4 border-b text-right space-x-2">
-                        ${payment.status !== 'Paid' ? `<button class="action-button px-3 py-1 text-sm bg-green-500 hover:bg-green-600" onclick="updatePaymentStatus(${payment.id}, 'Paid')"><i class="fas fa-check"></i> Paid</button>` : ''}
-                        ${payment.status !== 'Pending' ? `<button class="action-button px-3 py-1 text-sm bg-yellow-500 hover:bg-yellow-600" onclick="updatePaymentStatus(${payment.id}, 'Pending')"><i class="fas fa-hourglass-half"></i> Pending</button>` : ''}
-                        <button class="action-button px-3 py-1 text-sm bg-red-500 hover:bg-red-600" onclick="deletePayment(${payment.id})"><i class="fas fa-trash"></i> Delete</button>
-                    </td>
-                `;
+                row.innerHTML = `<td class="py-2 px-4 border-b">${p.date}</td><td class="py-2 px-4 border-b">${currentActivePolicy.currency} ${p.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td><td class="py-2 px-4 border-b"><span class="px-2 py-1 rounded-full text-xs font-semibold ${p.status === 'Paid' ? 'bg-green-100 text-green-700' : p.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">${p.status}</span></td><td class="py-2 px-4 border-b text-right space-x-2">${p.status !== 'Paid' ? `<button class="action-button px-3 py-1 text-sm bg-green-500 hover:bg-green-600" onclick="updatePaymentStatus(${p.id}, 'Paid')"><i class="fas fa-check"></i> Paid</button>` : ''}${p.status !== 'Pending' ? `<button class="action-button px-3 py-1 text-sm bg-yellow-500 hover:bg-yellow-600" onclick="updatePaymentStatus(${p.id}, 'Pending')"><i class="fas fa-hourglass-half"></i> Pending</button>` : ''}<button class="action-button px-3 py-1 text-sm bg-red-500 hover:bg-red-600" onclick="deletePayment(${p.id})"><i class="fas fa-trash"></i> Delete</button></td>`;
                 paymentHistoryTableBody.appendChild(row);
             });
         }
@@ -1743,13 +1534,10 @@
             const date = document.getElementById('new-payment-date').value;
             const amount = parseFloat(document.getElementById('new-payment-amount').value);
             const status = document.getElementById('new-payment-status').value;
-
             if (!date || isNaN(amount) || amount <= 0) {
-                showNotification('Please enter a valid date and amount.', 'error', 'Invalid Input');
-                return;
+                showNotification('Please enter a valid date and amount.', 'error', 'Invalid Input'); return;
             }
             if (!currentActivePolicy) return;
-
             const newPaymentId = currentActivePolicy.paymentHistory.length > 0 ? Math.max(...currentActivePolicy.paymentHistory.map(p => p.id)) + 1 : 1;
             currentActivePolicy.paymentHistory.push({ id: newPaymentId, date, amount, status });
             renderDetailPaymentHistory();
@@ -1759,9 +1547,9 @@
 
         function updatePaymentStatus(paymentId, newStatus) {
             if (!currentActivePolicy) return;
-            const paymentIndex = currentActivePolicy.paymentHistory.findIndex(p => p.id === paymentId);
-            if (paymentIndex !== -1) {
-                currentActivePolicy.paymentHistory[paymentIndex].status = newStatus;
+            const payment = currentActivePolicy.paymentHistory.find(p => p.id === paymentId);
+            if (payment) {
+                payment.status = newStatus;
                 renderDetailPaymentHistory();
                 showNotification(`Payment ${paymentId} status updated to ${newStatus}.`, 'success');
             }
@@ -1774,38 +1562,17 @@
             showNotification(`Payment ${paymentId} deleted.`, 'success');
         }
 
-        // --- Requests Functions ---
         function renderPendingRequests() {
             const container = document.getElementById('pending-requests-container');
             const noRequestsMessage = document.getElementById('no-pending-requests');
             container.innerHTML = '';
-
             const pendingRequests = mockUpcomingRequests.filter(req => req.status === 'PENDING' || req.status === 'IN_PROGRESS');
-
-            if (pendingRequests.length === 0) {
-                noRequestsMessage.classList.remove('hidden');
-                return;
-            } else {
-                noRequestsMessage.classList.add('hidden');
-            }
-
+            noRequestsMessage.classList.toggle('hidden', pendingRequests.length > 0);
+            if (pendingRequests.length === 0) return;
             pendingRequests.forEach(request => {
                 const card = document.createElement('div');
                 card.className = 'request-card';
-                card.innerHTML = `
-                    <h4>${request.requestType} - Policy: ${request.policyNumber}</h4>
-                    <p><strong>Date:</strong> ${request.requestDate}</p>
-                    <p><strong>Details:</strong> ${request.details}</p>
-                    <p><strong>Status:</strong> <span class="px-2 py-1 rounded-full text-xs font-semibold ${request.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}">${request.status.replace('_', ' ')}</span></p>
-                    <div class="actions">
-                        <button class="action-button bg-green-500 hover:bg-green-600" onclick="handleRequestAction(${request.id}, 'APPROVED')">
-                            <i class="fas fa-check-circle mr-2"></i> Approve
-                        </button>
-                        <button class="action-button bg-red-500 hover:bg-red-600" onclick="handleRequestAction(${request.id}, 'REJECTED')">
-                            <i class="fas fa-times-circle mr-2"></i> Reject
-                        </button>
-                    </div>
-                `;
+                card.innerHTML = `<h4>${request.requestType} - Policy: ${request.policyNumber}</h4><p><strong>Date:</strong> ${request.requestDate}</p><p><strong>Details:</strong> ${request.details}</p><p><strong>Status:</strong> <span class="px-2 py-1 rounded-full text-xs font-semibold ${request.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}">${request.status.replace('_', ' ')}</span></p><div class="actions"><button class="action-button bg-green-500 hover:bg-green-600" onclick="handleRequestAction(${request.id}, 'APPROVED')"><i class="fas fa-check-circle mr-2"></i> Approve</button><button class="action-button bg-red-500 hover:bg-red-600" onclick="handleRequestAction(${request.id}, 'REJECTED')"><i class="fas fa-times-circle mr-2"></i> Reject</button></div>`;
                 container.appendChild(card);
             });
         }
@@ -1814,33 +1581,21 @@
             const container = document.getElementById('processed-requests-container');
             const noRequestsMessage = document.getElementById('no-processed-requests');
             container.innerHTML = '';
-
             const processedRequests = mockUpcomingRequests.filter(req => req.status === 'APPROVED' || req.status === 'REJECTED');
-
-            if (processedRequests.length === 0) {
-                noRequestsMessage.classList.remove('hidden');
-                return;
-            } else {
-                noRequestsMessage.classList.add('hidden');
-            }
-            
+            noRequestsMessage.classList.toggle('hidden', processedRequests.length > 0);
+            if (processedRequests.length === 0) return;
             processedRequests.forEach(request => {
                 const card = document.createElement('div');
                 card.className = 'request-card';
-                card.innerHTML = `
-                    <h4>${request.requestType} - Policy: ${request.policyNumber}</h4>
-                    <p><strong>Date:</strong> ${request.requestDate}</p>
-                    <p><strong>Details:</strong> ${request.details}</p>
-                    <p><strong>Status:</strong> <span class="px-2 py-1 rounded-full text-xs font-semibold ${request.status === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${request.status.replace('_', ' ')}</span></p>
-                `;
+                card.innerHTML = `<h4>${request.requestType} - Policy: ${request.policyNumber}</h4><p><strong>Date:</strong> ${request.requestDate}</p><p><strong>Details:</strong> ${request.details}</p><p><strong>Status:</strong> <span class="px-2 py-1 rounded-full text-xs font-semibold ${request.status === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${request.status.replace('_', ' ')}</span></p>`;
                 container.appendChild(card);
             });
         }
 
         function handleRequestAction(requestId, actionStatus) {
-            const requestIndex = mockUpcomingRequests.findIndex(req => req.id === requestId);
-            if (requestIndex !== -1) {
-                mockUpcomingRequests[requestIndex].status = actionStatus;
+            const request = mockUpcomingRequests.find(req => req.id === requestId);
+            if (request) {
+                request.status = actionStatus;
                 showNotification(`Request ${requestId} has been ${actionStatus.toLowerCase()}.`, 'success');
                 renderPendingRequests();
                 applyCurrentFilters();
@@ -1849,85 +1604,38 @@
 
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn');
-
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            if (sidebar.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
-        });
-
-        if (window.innerWidth >= 1024) {
-            sidebar.addEventListener('mouseenter', () => {
-                if (!sidebar.dataset.manualExpand) {
-                     sidebar.classList.add('expanded');
-                }
-            });
-            sidebar.addEventListener('mouseleave', () => {
-                if (!sidebar.dataset.manualExpand) {
-                    sidebar.classList.remove('expanded');
-                }
-            });
-
-            sidebarCollapseBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('expanded');
-                if (sidebar.classList.contains('expanded')) {
-                    sidebar.dataset.manualExpand = 'true';
-                } else {
-                    sidebar.dataset.manualExpand = '';
-                }
-            });
-        }
+        sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
         
-        document.addEventListener('click', (event) => {
-            if (window.innerWidth < 1024 && sidebar.classList.contains('active') && 
-                !sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-                sidebar.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-
         document.addEventListener('DOMContentLoaded', () => {
             initializeUser();
             renderPolicyCounts();
             applyCurrentFilters();
             renderPendingRequests();
 
-            if (document.getElementById('btn-profile')) {
-                document.getElementById('btn-profile').addEventListener('click', () => {
-                    if (document.getElementById('profile-userCode-display')) document.getElementById('profile-userCode-display').textContent = config.userCode;
-                    if (document.getElementById('profile-customerNo-display')) document.getElementById('profile-customerNo-display').textContent = config.customerNo || 'N/A';
-                    openModal('profile-modal');
-                });
-            }
-
-            document.querySelectorAll('.modal-overlay .modal-close-btn').forEach(btn => {
-                btn.addEventListener('click', (event) => {
-                    const modalOverlay = event.target.closest('.modal-overlay');
-                    if (modalOverlay) {
-                        closeModal(modalOverlay.id);
-                    }
-                });
+            document.getElementById('btn-profile')?.addEventListener('click', () => {
+                document.getElementById('profile-userCode-display').textContent = config.userCode;
+                document.getElementById('profile-customerNo-display').textContent = config.customerNo || 'N/A';
+                openModal('profile-modal');
             });
-            
-            // Delete Confirmation Logic
             document.getElementById('confirm-delete-btn').addEventListener('click', confirmDeletePolicy);
             document.getElementById('cancel-delete-btn').addEventListener('click', () => closeModal('deleteConfirmationModal'));
+            document.getElementById('view-bank-details-btn').addEventListener('click', () => {
+                if(currentCustomerForBank) {
+                    fetchBankDetails(currentCustomerForBank, 0, 2);
+                } else {
+                    showNotification('No customer selected for bank details lookup.', 'error');
+                }
+            });
 
             // View Toggle Logic
             const gridViewBtn = document.getElementById('grid-view-btn');
             const listViewBtn = document.getElementById('list-view-btn');
-            
             gridViewBtn.addEventListener('click', () => {
                 currentViewMode = 'grid';
                 gridViewBtn.classList.add('active-view');
                 listViewBtn.classList.remove('active-view');
                 applyCurrentFilters();
             });
-
             listViewBtn.addEventListener('click', () => {
                 currentViewMode = 'list';
                 listViewBtn.classList.add('active-view');

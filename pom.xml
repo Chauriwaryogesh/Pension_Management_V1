@@ -10,9 +10,10 @@
 	</parent>
 	<groupId>com.pensionManagement</groupId>
 	<artifactId>Pension_Management_V1</artifactId>
-	<version>V1</version>
+	<version>1.0.0</version>
 	<name>Pension_Management_V1</name>
 	<description>PensionManagement for Spring Boot</description>
+	<packaging>war</packaging>
 	<url/>
 	<licenses>
 		<license/>
@@ -31,6 +32,12 @@
 		<spring-cloud.version>2025.0.0</spring-cloud.version>
 	</properties>
 	<dependencies>
+	<dependency>
+    <groupId>com.generic</groupId>
+    <artifactId>common-dto</artifactId>
+    <version>1.0.0</version>
+        </dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>

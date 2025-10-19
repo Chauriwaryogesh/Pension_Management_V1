@@ -15,7 +15,7 @@ public class BeneficiaryEntity {
     private String  beneficiaryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pension_policy_id")
+    @JoinColumn(name = "pensionPolicyNumber")
     private PensionPolicyEntity pensionPolicy;
 
     private String beneficiaryName;
@@ -23,6 +23,9 @@ public class BeneficiaryEntity {
     private String beneficiaryIdentityNumber;
     private String beneficiaryStatus;
     private String beneficiaryContactNumber;
+    private String beneficiaryAadharNumber;
+    private String beneficiaryDrivingNumber;
+    private String beneficiaryPANNumber;
 
  // Audit
  	private String createdBy;
@@ -30,6 +33,24 @@ public class BeneficiaryEntity {
  	private String updatedBy;
  	private LocalDateTime updatedDate;
 	
+	public String getBeneficiaryAadharNumber() {
+		return beneficiaryAadharNumber;
+	}
+	public void setBeneficiaryAadharNumber(String beneficiaryAadharNumber) {
+		this.beneficiaryAadharNumber = beneficiaryAadharNumber;
+	}
+	public String getBeneficiaryDrivingNumber() {
+		return beneficiaryDrivingNumber;
+	}
+	public void setBeneficiaryDrivingNumber(String beneficiaryDrivingNumber) {
+		this.beneficiaryDrivingNumber = beneficiaryDrivingNumber;
+	}
+	public String getBeneficiaryPANNumber() {
+		return beneficiaryPANNumber;
+	}
+	public void setBeneficiaryPANNumber(String beneficiaryPANNumber) {
+		this.beneficiaryPANNumber = beneficiaryPANNumber;
+	}
 	public String getBeneficiaryId() {
 		return beneficiaryId;
 	}

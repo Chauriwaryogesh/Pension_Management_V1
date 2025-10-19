@@ -15,18 +15,23 @@ import lombok.Data;
 public class PensionPolicyRequestDTO {
 
     // ---------------- Customer Details ----------------
-    private String customerNumber;      // Unique customer ID
-    private String customerName;        // First Name
-    private String middleName;          // Middle Name
-    private String surname;             // Last Name
-    private String phoneNumber;
+    private String customerNumber;
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private String dateOfBirth;
     private String email;
-    private String dateOfBirth;         // Could be LocalDate if needed
+    private String phoneNumber;
+    private String address;
+    private String aadharNumber;
+    private String panNumber;
+    private String drivingLicense;
     private String gender;
     private String smokerStatus;        // Optional, for insurance risk
-    private String userCode;            // Optional, for internal mapping
+    private String userCode; 
 
     // ---------------- Policy Details ----------------
+    
     private String action;              // CREATE, UPDATE, DELETE
     private String policyName;
     private String policyType;          // Pension, Annuity etc.
@@ -70,23 +75,49 @@ public class PensionPolicyRequestDTO {
 	public void setCustomerNumber(String customerNumber) {
 		this.customerNumber = customerNumber;
 	}
-	public String getCustomerName() {
-		return customerName;
-	}
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
-	}
+	
 	public String getMiddleName() {
 		return middleName;
 	}
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
-	public String getSurname() {
-		return surname;
+	
+	public String getFirstName() {
+		return firstName;
 	}
-	public void setSurname(String surname) {
-		this.surname = surname;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getAadharNumber() {
+		return aadharNumber;
+	}
+	public void setAadharNumber(String aadharNumber) {
+		this.aadharNumber = aadharNumber;
+	}
+	public String getPanNumber() {
+		return panNumber;
+	}
+	public void setPanNumber(String panNumber) {
+		this.panNumber = panNumber;
+	}
+	public String getDrivingLicense() {
+		return drivingLicense;
+	}
+	public void setDrivingLicense(String drivingLicense) {
+		this.drivingLicense = drivingLicense;
 	}
 	public String getPhoneNumber() {
 		return phoneNumber;
